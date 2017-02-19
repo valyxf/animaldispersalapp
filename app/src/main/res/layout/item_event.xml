@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <TextView
+        android:id="@+id/event_date_time"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/event_date_time" />
+    <TextView
+        android:id="@+id/event_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/event_type"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/event_date_time"
+        android:layout_toEndOf="@+id/event_date_time"
+        android:maxLines="1"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/event_remarks"
+        android:id="@+id/event_remarks"
+        android:layout_below="@+id/event_type"
+        android:layout_toRightOf="@+id/event_date_time"
+        android:layout_toEndOf="@+id/event_date_time"
+        android:maxLines="1"/>
+</RelativeLayout>

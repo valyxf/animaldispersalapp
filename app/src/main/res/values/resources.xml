@@ -1,0 +1,12 @@
+<resources>
+    <string-array name="country_titles">
+        <item>Bangladesh</item>
+        <item>Pakistan</item>
+        <item>Philippines</item>
+    </string-array>
+    <string-array name="user_roles">
+        <item>Dispersal IC</item>
+        <item>Country Manager</item>
+        <item>International Manager</item>
+    </string-array>
+</resources>
