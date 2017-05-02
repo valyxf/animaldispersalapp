@@ -10,19 +10,17 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.text.Layout;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.ContextMenu;
@@ -35,17 +33,18 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Menu;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,13 +56,13 @@ import com.example.animaldispersal.nfc.NfcWriteActivity;
 import com.example.davaodemo.R;
 import com.example.animaldispersal.dataobject.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.ndeftools.Message;
 import org.ndeftools.MimeRecord;
-import org.ndeftools.externaltype.AndroidApplicationRecord;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -81,7 +80,6 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private EditText mAnimalId;
     private EditText mSupervisor;
     //private EditText mAnimalType;
-    private EditText mCountry;
     private EditText mDateOfBirth;
     private EditText mDatePurchased;
     private EditText mPurchasePrice;
@@ -95,6 +93,8 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private EditText mCaretakerAddr1;
     private EditText mCaretakerAddr2;
     private EditText mCaretakerAddr3;
+
+    private Spinner mCountry2;
 
     private RadioGroup mGenderRadioGroup;
     private RadioButton mGenderRadioButton;
@@ -135,14 +135,26 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private View doneActionView;
     private View cancelActionView;
 
-    private RelativeLayout relativeLayout;
-    private RelativeLayout relativeLayout2;
-    private RelativeLayout relativeLayout3;
-    private RelativeLayout relativeLayout4;
+    private LinearLayout linearLayout;
+    private LinearLayout linearLayout2;
+    private LinearLayout linearlayout3;
+    private LinearLayout linearlayout4;
+    private LinearLayout ll2header ;
+    private LinearLayout ll2;
+    private LinearLayout llcheader ;
+    private LinearLayout llc;
+    private LinearLayout lleheader ;
+    private LinearLayout lle;
+
+    private ImageView image;
+    private ImageView image2;
+    private ImageView image3;
 
     private String animalRecordType;
     private String caretakerRecordType;
     private String caretakerUid;
+    private String nfcScanEntryTimestamp;
+    private String nfcScanSaveTimestamp;
     //private Boolean animalChanged=false;
 
     private SharedPreferences mPrefs;
@@ -183,7 +195,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animal_detail);
         setDetecting(true);
-        setScanOff();
+        setScanOn(false);
 
 
         mAnimalId = (EditText)findViewById(R.id.animal_id);
@@ -195,8 +207,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         mDateDistributed = (EditText)findViewById(R.id.date_distributed);
         mDateSold = (EditText)findViewById(R.id.date_sold);
         mSalePrice = (EditText)findViewById(R.id.sale_price);
-        mCountry = (EditText)findViewById(R.id.country);
-
+        mCountry2 = (Spinner)findViewById(R.id.country2);
 
         mGenderRadioGroup = (RadioGroup)findViewById(R.id.gender_radio_group);
         mRadioButton = (RadioButton)findViewById(R.id.male_radio_button);
@@ -230,8 +241,8 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
         colorEmphasis = ContextCompat.getColor(this, R.color.emphasis);
         colorPrimaryDark = ContextCompat.getColor(this, R.color.colorPrimaryDark);
-        enabledEdittext = mAnimalId.getBackground();
-        disabledEditext = ContextCompat.getDrawable(this, R.drawable.disabled_edittext);
+        //enabledEdittext = mAnimalId.getBackground();
+        //disabledEditext = ContextCompat.getDrawable(this, R.drawable.disabled_edittext);
 
         saveButton = (Button) findViewById(R.id.savebutton);
         saveButton.setEnabled(true);
@@ -252,12 +263,67 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         //addEventLink = (TextView)findViewById(R.id.add_event_link);
         addEventButton = (Button)findViewById(R.id.addEventButton);
 
-        relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayoutAnimalDetailsI);
-        relativeLayout2 = (RelativeLayout) findViewById(R.id.relativeLayoutAnimalDetailsII);
-        relativeLayout3 = (RelativeLayout) findViewById(R.id.relativeLayoutCaretaker);
-        relativeLayout4 = (RelativeLayout) findViewById(R.id.relativeLayoutEvent);
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayoutAnimalDetailsI);
+        linearLayout2 = (LinearLayout) findViewById(R.id.linearLayoutAnimalDetailsII);
+        linearlayout3 = (LinearLayout) findViewById(R.id.linearLayoutCaretaker);
+        linearlayout4 = (LinearLayout) findViewById(R.id.linearLayoutEvent);
+
+        image = (ImageView) findViewById(R.id.imageView);
+        image2 = (ImageView) findViewById(R.id.imageView2);
+        image3 = (ImageView) findViewById(R.id.imageView3);
+
+        ll2 = (LinearLayout) findViewById(R.id.AnimalDetailsII);
+        ll2header = (LinearLayout) findViewById(R.id.linearLayoutAnimalDetailsIIHeader);
+        ll2header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (View.GONE == ll2.getVisibility()) {
+                    ll2.setVisibility(View.VISIBLE);
+                    image.setImageResource(R.mipmap.ic_expanded);
+                }
+                else {
+                    ll2.setVisibility(View.GONE);
+                    image.setImageResource(R.mipmap.ic_collapsed);
+                }
+            }
+        });
+
+        llc = (LinearLayout) findViewById(R.id.caretaker);
+        llcheader = (LinearLayout) findViewById(R.id.linearLayoutCaretakerHeader);
+        llcheader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (View.GONE == llc.getVisibility()) {
+                    llc.setVisibility(View.VISIBLE);
+                    image2.setImageResource(R.mipmap.ic_expanded);
+                }
+                else {
+                    llc.setVisibility(View.GONE);
+                    image2.setImageResource(R.mipmap.ic_collapsed);
+                }
+            }
+        });
+
+        lle = (LinearLayout) findViewById(R.id.event);
+        lleheader = (LinearLayout) findViewById(R.id.linearLayoutEventHeader);
+        lleheader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (View.GONE == lle.getVisibility()) {
+                    lle.setVisibility(View.VISIBLE);
+                    image3.setImageResource(R.mipmap.ic_expanded);
+                }
+                else {
+                    lle.setVisibility(View.GONE);
+                    image3.setImageResource(R.mipmap.ic_collapsed);
+                }
+            }
+        });
+
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        nfcScanSaveTimestamp = null;
 
         final ListView eventsView = (ListView) findViewById(R.id.listView1);
         final EventAdapter eventAdapter = new EventAdapter(this, events);
@@ -272,6 +338,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
         if (extras ==null){
             fillNewAnimal(false,null);
+            nfcScanEntryTimestamp = null;
         }
         else {
             String extrasAnimalId = extras.getString("SELECTED_ANIMAL_ID");
@@ -280,6 +347,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 fillExistingAnimal(extrasAnimalId);
             }else fillNewAnimal(true, extrasAnimalId);
 
+            nfcScanEntryTimestamp = extras.getString("NFC_SCAN_ENTRY_TIMESTAMP");
             /*
             //New animal id scanned by NFC
             if ((extras.getString("NEW_ANIMAL_ID"))!=null) {
@@ -379,7 +447,6 @@ public class AnimalDetailActivity extends NfcWriteActivity {
             public void onClick(View v) {
 
                 View view = getCurrentFocus();
-                Log.d(TAG,"Current Focus: "+view.getId());
 
                 switch (mode){
                     case "AR":
@@ -389,10 +456,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         if (animal != null) {
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                            builder.setTitle("Error");
-                            builder.setMessage("Duplicate Animal ID found.")
+                            builder.setTitle(getString(R.string.error));
+                            builder.setMessage(getString(R.string.error_duplicate_animal_id))
                                     .setCancelable(true)
-                                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                    .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();
                                         }
@@ -404,7 +471,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         else {
                             if (TextUtils.isEmpty(mAnimalId.getText().toString().trim()) ||
                                     TextUtils.isEmpty(mSupervisor.getText().toString().trim()) ||
-                                    TextUtils.isEmpty(mCountry.getText().toString().trim()) ||
+                                    mCountry2.getSelectedItemPosition() == 0 ||
                                     mAnimalTypeRadioGroup.getCheckedRadioButtonId() == -1 ||
                                     mGenderRadioGroup.getCheckedRadioButtonId() == -1
                                     ){
@@ -412,12 +479,6 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                                 break;
                             }
 
-                            if (!"Pakistan".equalsIgnoreCase(getText(mCountry)) &&
-                                    !"Philippines".equalsIgnoreCase(getText(mCountry)) &&
-                                    !"Bangladesh".equalsIgnoreCase(getText(mCountry))) {
-                                toast(getString(R.string.invalid_country));
-                                break;
-                            }
                             //saveRecords();
                             writeAndLockTag();
                             //setResult(RESULT_OK);
@@ -426,13 +487,15 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         break;
 
                     case "N":
-                            if (isCaretakerIdEmpty()) {
-                                toast(getString(R.string.fill_in_caretaker_id));
-                                break;
-                            }
-                            saveRecords();
-                            notifyAnimalRecordSaved();
-                        break;
+
+
+                        if (isCaretakerIdEmpty()) {
+                            toast(getString(R.string.fill_in_caretaker_id));
+                            break;
+                        }
+                        saveRecords();
+                        notifyAnimalRecordSaved();
+                    break;
                     default:
                         //Check mandatory fields are filled
 
@@ -443,29 +506,21 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         }
                         if (TextUtils.isEmpty(mAnimalId.getText().toString().trim()) ||
                                     TextUtils.isEmpty(mSupervisor.getText().toString().trim()) ||
-                                    TextUtils.isEmpty(mCountry.getText().toString().trim()) ||
+                                    mCountry2.getSelectedItemPosition() == 0 ||
                                     mAnimalTypeRadioGroup.getCheckedRadioButtonId() == -1 ||
                                     mGenderRadioGroup.getCheckedRadioButtonId() == -1
                                     ) {
                             makeToast();
                             break;
                         }
-
-                        if (!"Pakistan".equalsIgnoreCase(getText(mCountry)) &&
-                                !"Philippines".equalsIgnoreCase(getText(mCountry)) &&
-                                !"Bangladesh".equalsIgnoreCase(getText(mCountry))) {
-                            Toast toast = Toast.makeText(AnimalDetailActivity.this, getString(R.string.invalid_country), Toast.LENGTH_LONG);
-                            toast.show();
-                            break;
-                        }
-
                         saveRecords();
                         //setResult(RESULT_OK);
                         //finish();
                         notifyAnimalRecordSaved();
                         break;
                 }
-                view.requestFocus();
+                if (!(view==null))
+                    view.requestFocus();
             }
         }
         );
@@ -515,7 +570,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         break;
                 }
 
-                setTitle("ANIMAL RECORD");
+                setTitle(getString(R.string.heading_animal_record));
                 refreshLayout();
             }
         });
@@ -665,11 +720,11 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                     //need to set animal id here.
                     events.add(event);
                     fillEvents(events);
-                    editButton.callOnClick();
-                    //refreshLayout();
-                    ListView eventsView = (ListView) findViewById(R.id.listView1);
-                    eventsView.requestFocus();
 
+                    //refreshLayout();
+                    if (View.GONE == lle.getVisibility()) lleheader.callOnClick();
+                    lle.requestFocus();
+                    editButton.callOnClick();
 
                 }
                 break;
@@ -687,7 +742,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        /*TODO Should be on hold. not on selected
+        /*Should be on hold. not on selected
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         Event itemSelected = (Event)displayEventList.remove(info.position);
         if ("D".equals(itemSelected.getRecordType())) {
@@ -717,6 +772,15 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     @Override
     public void onNewIntent(Intent intent){
         super.onNewIntent(intent);
+
+        //PROBLEM: when a tag is read at animaldetailactivity when it doesnt include writing, the extras are erased.
+        //So the best case is animal still can be saved
+        //but worse case is when the screen is rotated then the app will crash because
+        //oncreate uses the value in the extras to prepare the data
+        //is there a way that oncreate is not called?
+        //SOLUTION: I set onconfig in manifest to bar from calling oncreate when orientation is changed
+        if (!getScanOn())
+            toast("Error. You can only scan a tag from the home screen.");
 
         if (dialog!= null) {
             dialog.dismiss();
@@ -758,7 +822,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF8800")));
-        setTitle("NEW ANIMAL REGISTRATION");
+        setTitle(getString(R.string.heading_new_animal_registration));
 
         //animalRecordType = "N";
         //caretakerRecordType = "N";
@@ -772,8 +836,9 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
 
         if (!(userRole ==2)) {
-            mCountry.setText(userCountry);
+            mCountry2.setSelection(Integer.valueOf(userCountry));
         }
+        else mCountry2.setSelection(0);
         mSupervisor.setText(userName);
 
     }
@@ -782,9 +847,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private void fillExistingAnimal(String selectedAnimalId){
 
         mode = "V";
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.colorPrimary)));
-        setTitle("ANIMAL RECORD");
+        setTitle(getString(R.string.heading_animal_record));
 
         /**************OBTAIN RECORD***************/
         LocalDBHelper localDBHelper = LocalDBHelper.getInstance(this);
@@ -797,9 +863,24 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         /********* BASIC POPULATION OF FIELDS***********/
         //FILL ANIMAL DETAILS
         animalRecordType = existingAnimal.getRecordType();
+        nfcScanSaveTimestamp = null;
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        if (nfcScanEntryTimestamp != null)
+            nfcScanEntryTimestamp = dateFormatter.format(cal.getTime());
 
         mAnimalId.setText(existingAnimal.getAnimalId());
         mSupervisor.setText(existingAnimal.getSupervisor());
+
+
+        mAnimalTypeRadioGroup.clearCheck();
+        int animalTypeIndex = Integer.parseInt(existingAnimal.getAnimalType());
+        Log.d(TAG, "animalTypeIndex: "+animalTypeIndex);
+        RadioButton radioButton = (RadioButton)mAnimalTypeRadioGroup.getChildAt(animalTypeIndex);
+        mAnimalTypeRadioGroup.check(radioButton.getId());
+
+        /*
         switch (existingAnimal.getAnimalType()) {
             case "Cow":
                 cowRadioButton.setChecked(true);
@@ -817,7 +898,14 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 pigRadioButton.setChecked(true);
                 break;
         }
+        */
 
+        mGenderRadioGroup.clearCheck();
+        int genderIndex = Integer.parseInt(existingAnimal.getGender());
+        Log.d(TAG, "genderIndex: "+genderIndex);
+        RadioButton gRadioButton = (RadioButton)mGenderRadioGroup.getChildAt(genderIndex);
+        mGenderRadioGroup.check(gRadioButton.getId());
+        /*
         if ("Female".equals(existingAnimal.getGender())) {
             fRadioButton.setChecked(true);
             mRadioButton.setChecked(false);
@@ -826,15 +914,18 @@ public class AnimalDetailActivity extends NfcWriteActivity {
             mRadioButton.setChecked(true);
             fRadioButton.setChecked(false);
         }
+        */
 
         if (existingAnimal.getDateOfBirth() != null)
             mDateOfBirth.setText(existingAnimal.getDateOfBirth());
-        if (existingAnimal.getCountry() != null)
-            mCountry.setText(existingAnimal.getCountry());
+        if (existingAnimal.getCountry() != null) {
+            mCountry2.setSelection(Integer.parseInt(existingAnimal.getCountry()));
+        }
         if (existingAnimal.getDatePurchased() != null)
             mDatePurchased.setText(existingAnimal.getDatePurchased());
-        if (existingAnimal.getPurchasePrice() != null)
+        if (existingAnimal.getPurchasePrice() != null) {
             mPurchasePrice.setText(existingAnimal.getPurchasePrice());
+        }
         if (existingAnimal.getDateDistributed()!= null)
             mDateDistributed.setText(existingAnimal.getDateDistributed());
         if (existingAnimal.getSalePrice() != null)
@@ -905,27 +996,32 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
     private void refreshLayout(){
 
+        Log.d(TAG, "In refreshLayout, mode="+mode);
         switch (mode) {
             case "AR":
-                relativeLayout2.setVisibility(View.GONE);
-                relativeLayout3.setVisibility(View.GONE);
-                relativeLayout4.setVisibility(View.GONE);
+                linearLayout2.setVisibility(View.GONE);
+                linearlayout3.setVisibility(View.GONE);
+                linearlayout4.setVisibility(View.GONE);
 
                 editButton.setVisibility(View.GONE);
                 saveButton2.setVisibility(View.VISIBLE);
 
-                if (userRole ==2)
-                    mCountry.setEnabled(true);
-                else mCountry.setEnabled(false);
+                if (userRole ==2) {
+                    mCountry2.setEnabled(true);
+                }
+                else {
+                    mCountry2.setEnabled(false);
+                }
 
-                saveButton2.setText("REGISTER NEW ANIMAL");
+                saveButton2.setText(R.string.btn_register_animal);
+                saveButton2.setPadding(8,8,8,8);
                 saveButton2.setBackgroundColor(Color.parseColor("#FF8800"));
 
                 break;
             case "N":
-                relativeLayout2.setVisibility(View.VISIBLE);
-                relativeLayout3.setVisibility(View.VISIBLE);
-                relativeLayout4.setVisibility(View.VISIBLE);
+                linearLayout2.setVisibility(View.VISIBLE);
+                linearlayout3.setVisibility(View.VISIBLE);
+                linearlayout4.setVisibility(View.VISIBLE);
 
                 editButton.setVisibility(View.GONE);
                 editButton2.setVisibility(View.GONE);
@@ -936,15 +1032,18 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 saveButton2.setVisibility(View.VISIBLE);
                 saveButton3.setVisibility(View.VISIBLE);
                 saveButton4.setVisibility(View.VISIBLE);
+
+                saveButton2.setText(getString(R.string.save));
+                saveButton2.setBackgroundColor(Color.LTGRAY);
 
                 break;
 
             case "UD":
-                infoTextView.setText("Info: This record has not been synced. You may update open fields.");
+                infoTextView.setText(R.string.update_record_not_synced);
                 infoTextView.setVisibility(View.VISIBLE);
-                relativeLayout2.setVisibility(View.VISIBLE);
-                relativeLayout3.setVisibility(View.VISIBLE);
-                relativeLayout4.setVisibility(View.VISIBLE);
+                linearLayout2.setVisibility(View.VISIBLE);
+                linearlayout3.setVisibility(View.VISIBLE);
+                linearlayout4.setVisibility(View.VISIBLE);
 
                 editButton.setVisibility(View.GONE);
                 editButton2.setVisibility(View.GONE);
@@ -956,17 +1055,16 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 saveButton3.setVisibility(View.VISIBLE);
                 saveButton4.setVisibility(View.VISIBLE);
 
-                saveButton2.setText("SAVE");
-                saveButton2.setBackgroundResource(android.R.drawable.btn_default_small);
+                saveButton2.setText(getString(R.string.save));
+                saveButton2.setBackgroundColor(Color.LTGRAY);
+                //saveButton2.setBackgroundResource(android.R.drawable.btn_default_small);
 
                 //set mandatory fields also enabled//
                 if (userRole ==2) {
-                    mCountry.setEnabled(true);
-                    mCountry.setBackground(enabledEdittext);
+                    mCountry2.setEnabled(true);
                 }
                 else{
-                    mCountry.setEnabled(false);
-                    mCountry.setBackground(disabledEditext);
+                    mCountry2.setEnabled(false);
                 }
                 cowRadioButton.setEnabled(true);
                 goatRadioButton.setEnabled(true);
@@ -982,6 +1080,13 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mDateSold.setEnabled(true);
                 mSalePrice.setEnabled(true);
 
+                mDateOfBirth.getBackground().clearColorFilter();
+                mDatePurchased.getBackground().clearColorFilter();
+                mPurchasePrice.getBackground().clearColorFilter();
+                mDateDistributed.getBackground().clearColorFilter();
+                mDateSold.getBackground().clearColorFilter();
+                mSalePrice.getBackground().clearColorFilter();
+
                 mCaretakerId.setEnabled(true);
                 mCaretakerName.setEnabled(true);
                 mCaretakerTel.setEnabled(true);
@@ -989,6 +1094,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mCaretakerAddr2.setEnabled(true);
                 mCaretakerAddr3.setEnabled(true);
 
+                /*
                 mDateOfBirth.setBackground(enabledEdittext);
                 mDatePurchased.setBackground(enabledEdittext);
                 mPurchasePrice.setBackground(enabledEdittext);
@@ -996,21 +1102,23 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mDateSold.setBackground(enabledEdittext);
                 mSalePrice.setBackground(enabledEdittext);
 
+
                 mCaretakerId.setBackground(enabledEdittext);
                 mCaretakerName.setBackground(enabledEdittext);
                 mCaretakerTel.setBackground(enabledEdittext);
                 mCaretakerAddr1.setBackground(enabledEdittext);
                 mCaretakerAddr2.setBackground(enabledEdittext);
                 mCaretakerAddr3.setBackground(enabledEdittext);
+                */
 
                 break;
 
             case "US":
-                infoTextView.setText("Info: This record has been synced. You may only update the fields in blue.");
+                infoTextView.setText(R.string.update_record_synced);
                 infoTextView.setVisibility(View.VISIBLE);
-                relativeLayout2.setVisibility(View.VISIBLE);
-                relativeLayout3.setVisibility(View.VISIBLE);
-                relativeLayout4.setVisibility(View.VISIBLE);
+                linearLayout2.setVisibility(View.VISIBLE);
+                linearlayout3.setVisibility(View.VISIBLE);
+                linearlayout4.setVisibility(View.VISIBLE);
 
                 editButton.setVisibility(View.GONE);
                 editButton2.setVisibility(View.GONE);
@@ -1022,11 +1130,12 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 saveButton3.setVisibility(View.VISIBLE);
                 saveButton4.setVisibility(View.VISIBLE);
 
-                saveButton2.setText("SAVE");
-                saveButton2.setBackgroundResource(android.R.drawable.btn_default_small);
+                saveButton2.setText(getString(R.string.save));
+                saveButton2.setBackgroundColor(Color.LTGRAY);
+                //saveButton2.setBackgroundResource(android.R.drawable.btn_default_small);
 
                 mAnimalId.setEnabled(false);
-                mCountry.setEnabled(false);
+                mCountry2.setEnabled(false);
                 mSupervisor.setEnabled(false);
                 cowRadioButton.setEnabled(false);
                 goatRadioButton.setEnabled(false);
@@ -1039,35 +1148,30 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
                 if (originalServerAnimal.getDateOfBirth() == null){
                     mDateOfBirth.setEnabled(true);
-                    mDateOfBirth.setBackground(enabledEdittext);
                     dateOfBirthLabel.setTextColor(colorEmphasis);
 
                 }
                 if (originalServerAnimal.getDatePurchased() == null){
                     mDatePurchased.setEnabled(true);
-                    mDatePurchased.setBackground(enabledEdittext);
                     datePurchasedLabel.setTextColor(colorEmphasis);
                 }
                 if (originalServerAnimal.getPurchasePrice() == null ||
                         "0".equals(originalServerAnimal.getPurchasePrice())){
                     mPurchasePrice.setEnabled(true);
-                    mPurchasePrice.setBackground(enabledEdittext);
+                    mPurchasePrice.getBackground().clearColorFilter();
                     purchasePriceLabel.setTextColor(colorEmphasis);
                 }
                 if (originalServerAnimal.getDateDistributed() == null){
                     mDateDistributed.setEnabled(true);
-                    mDateDistributed.setBackground(enabledEdittext);
                     dateDistributedLabel.setTextColor(colorEmphasis);
                 }
                 if (originalServerAnimal.getDateSold() == null){
                     mDateSold.setEnabled(true);
-                    mDateSold.setBackground(enabledEdittext);
                     dateSoldLabel.setTextColor(colorEmphasis);
                 }
                 if (originalServerAnimal.getSalePrice() == null ||
                         "0".equals(originalServerAnimal.getSalePrice())){
                     mSalePrice.setEnabled(true);
-                    mSalePrice.setBackground(enabledEdittext);
                     salePriceLabel.setTextColor(colorEmphasis);
                 }
 
@@ -1086,69 +1190,66 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                     caretakerAddrLine2Label.setTextColor(colorEmphasis);
                     caretakerAddrLine3Label.setTextColor(colorEmphasis);
 
+                    /*
                     mCaretakerId.setBackground(enabledEdittext);
                     mCaretakerName.setBackground(enabledEdittext);
                     mCaretakerTel.setBackground(enabledEdittext);
                     mCaretakerAddr1.setBackground(enabledEdittext);
                     mCaretakerAddr2.setBackground(enabledEdittext);
                     mCaretakerAddr3.setBackground(enabledEdittext);
+                    */
                 }
                 else {
 
                     if (originalServerCaretaker.getCaretakerId() == null) {
                         mCaretakerId.setEnabled(true);
-                        mCaretakerId.setBackground(enabledEdittext);
+                        //mCaretakerId.setBackground(enabledEdittext);
                         caretakerIdLabel.setTextColor(colorEmphasis);
                     }
                     if (originalServerCaretaker.getCaretakerName() == null) {
                         mCaretakerName.setEnabled(true);
-                        mCaretakerName.setBackground(enabledEdittext);
                         caretakerNameLabel.setTextColor(colorEmphasis);
                     }
                     if (originalServerCaretaker.getCaretakerTel() == null) {
                         mCaretakerTel.setEnabled(true);
-                        mCaretakerTel.setBackground(enabledEdittext);
                         caretakerTelephoneLabel.setTextColor(colorEmphasis);
                     }
                     if (originalServerCaretaker.getCaretakerAddr1() == null) {
                         mCaretakerAddr1.setEnabled(true);
-                        mCaretakerAddr1.setBackground(enabledEdittext);
                         caretakerAddrLine1Label.setTextColor(colorEmphasis);
                     }
                     if (originalServerCaretaker.getCaretakerAddr2() == null) {
                         mCaretakerAddr2.setEnabled(true);
-                        mCaretakerAddr2.setBackground(enabledEdittext);
                         caretakerAddrLine2Label.setTextColor(colorEmphasis);
                     }
                     if (originalServerCaretaker.getCaretakerAddr3() == null) {
                         mCaretakerAddr3.setEnabled(true);
-                        mCaretakerAddr3.setBackground(enabledEdittext);
                         caretakerAddrLine3Label.setTextColor(colorEmphasis);
                     }
                 }
                 break;
 
             case "V":
-                relativeLayout2.setVisibility(View.VISIBLE);
-                relativeLayout3.setVisibility(View.VISIBLE);
-                relativeLayout4.setVisibility(View.VISIBLE);
+                linearLayout2.setVisibility(View.VISIBLE);
+                linearlayout3.setVisibility(View.VISIBLE);
+                linearlayout4.setVisibility(View.VISIBLE);
 
                 switch (animalRecordType) {
                     case "D":
-                        infoTextView.setText("Info: This record has not been synced.");
+                        infoTextView.setText(R.string.view_record_not_synced);
                         infoTextView.setVisibility(View.VISIBLE);
                         break;
                     case "US":
-                        infoTextView.setText("Info: This record has been synced.");
+                        infoTextView.setText(R.string.info_record_synced);
                         infoTextView.setVisibility(View.VISIBLE);
                         break;
                     case "S":
                         if (recordEditable()){
-                            infoTextView.setText("Info: This record has been synced. ");
+                            infoTextView.setText(R.string.info_record_synced);
                             infoTextView.setVisibility(View.VISIBLE);
                         }
                         else {
-                            infoTextView.setText("Info: This record has been synced. It is a fully filled record so it cannot be edited.");
+                            infoTextView.setText(R.string.info_record_fully_filled);
                             infoTextView.setVisibility(View.VISIBLE);
                         }
                         break;
@@ -1186,7 +1287,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 caretakerAddrLine3Label.setTextColor(colorPrimaryDark);
 
                 mAnimalId.setEnabled(false);
-                mCountry.setEnabled(false);
+                mCountry2.setEnabled(false);
                 mSupervisor.setEnabled(false);
 
                 cowRadioButton.setEnabled(false);
@@ -1209,10 +1310,19 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mCaretakerAddr2.setEnabled(false);
                 mCaretakerAddr3.setEnabled(false);
 
-                mAnimalId.setBackground(disabledEditext);
-                mCountry.setBackground(disabledEditext);
-                mSupervisor.setBackground(disabledEditext);
+                //mAnimalId.setBackground(disabledEditext);
+                //mSupervisor.setBackground(disabledEditext);
 
+                /*
+                mDateOfBirth.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                mDatePurchased.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                mPurchasePrice.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                mDateDistributed.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                mDateSold.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                mSalePrice.getBackground().setColorFilter(Color.parseColor("#00FFFFFF"), PorterDuff.Mode.SRC_IN);
+                */
+
+                /*
                 mDateOfBirth.setBackground(disabledEditext);
                 mDatePurchased.setBackground(disabledEditext);
                 mPurchasePrice.setBackground(disabledEditext);
@@ -1226,6 +1336,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mCaretakerAddr1.setBackground(disabledEditext);
                 mCaretakerAddr2.setBackground(disabledEditext);
                 mCaretakerAddr3.setBackground(disabledEditext);
+                */
 
                 break;
 
@@ -1240,9 +1351,11 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
         int selectedAnimalTypeId = mAnimalTypeRadioGroup.getCheckedRadioButtonId();
         mAnimalTypeSelection = (RadioButton) findViewById(selectedAnimalTypeId);
+        int animalTypeIndex = mAnimalTypeRadioGroup.indexOfChild(mAnimalTypeSelection);
 
         int selectedId = mGenderRadioGroup.getCheckedRadioButtonId();
         mGenderRadioButton = (RadioButton) findViewById(selectedId);
+        int genderIndex = mGenderRadioGroup.indexOfChild(mGenderRadioButton);
 
         if (existingAnimal==null) {
 
@@ -1255,24 +1368,27 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         }
         else caretakerUid = existingAnimal.getCaretakerUid();
 
-        Log.d(TAG, mAnimalId.getText().toString());
-
         Animal newAnimal = new Animal(
                 getText(mAnimalId),
                 getText(mSupervisor),
-                getText(mAnimalTypeSelection),
-                getText(mGenderRadioButton),
+                //getText(mAnimalTypeSelection),
+                String.valueOf(animalTypeIndex),
+                //getText(mGenderRadioButton),
+                String.valueOf(genderIndex),
                 getText(mDateOfBirth),
-                getText(mCountry),
+                String.valueOf(mCountry2.getSelectedItemPosition()),
                 getText(mDatePurchased),
                 getText(mPurchasePrice),
                 getText(mDateDistributed),
                 getText(mDateSold),
                 getText(mSalePrice),
                 caretakerUid,
-                animalRecordType
-
+                animalRecordType,
+                nfcScanEntryTimestamp,
+                nfcScanSaveTimestamp
         );
+        Log.d(TAG, newAnimal.toString());
+
         if (!newAnimal.equals(existingAnimal)) {
             switch (animalRecordType){
                 case "D": case "UD":
@@ -1310,7 +1426,9 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 getText(mCaretakerAddr1),
                 getText(mCaretakerAddr2),
                 getText(mCaretakerAddr3),
-                caretakerRecordType
+                caretakerRecordType,
+                nfcScanEntryTimestamp,
+                nfcScanSaveTimestamp
         );
         if (!caretaker.equals(existingCaretaker)){
             if (existingCaretaker != null) {
@@ -1342,6 +1460,8 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         for (int i = 0; i < events.size(); i++){
             Log.d(TAG,"event_i "+i);
 
+            events.get(i).setNfcScanEntryTimestamp(nfcScanEntryTimestamp);
+            events.get(i).setNfcScanSaveTimestamp(nfcScanSaveTimestamp);
 
             //If the event was updated
             if (events.get(i).getEventUpdated()) {
@@ -1628,6 +1748,8 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 return true;
             if (originalServerAnimal.getSalePrice()==null)
                 return true;
+            if (existingCaretaker==null)
+                return true;
             if (existingCaretaker.getCaretakerName() ==null)
                 return true;
             if (existingCaretaker.getCaretakerTel() ==null)
@@ -1648,10 +1770,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private void writeAndLockTag(){
 
         setNfcWriteValues(false, getText(mAnimalId));
-        setScanOn();
+        setScanOn(true);
 
         dialog = new ProgressDialog(AnimalDetailActivity.this);
-        SpannableString ss1=  new SpannableString("Rescan Tag To Confirm Animal Registration");
+        SpannableString ss1=  new SpannableString(getString(R.string.alert_rescan_tag));
         ss1.setSpan(new RelativeSizeSpan(1.5f), 0, ss1.length(), 0);
         ss1.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.colorAccent)), 0, ss1.length(), 0);
         dialog.setMessage(ss1);
@@ -1666,12 +1788,14 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         else return null;
     }
 
-    private String getText(RadioButton radioButton){
-        if (radioButton == null) return null;
-        if (!TextUtils.isEmpty(radioButton.getText().toString().trim()))
-            return radioButton.getText().toString().trim();
+    /*
+    private String getText(Spinner spinner){
+        if (spinner == null) return null;
+        if (!spinner.getSelectedItemPosition()
+            return spinner.getText().toString().trim();
         else return null;
     }
+    */
 
     private boolean isExistingAnimal(String animalId){
         LocalDBHelper localDBHelper = LocalDBHelper.getInstance(AnimalDetailActivity.this);
@@ -1682,12 +1806,13 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
     private void notifyAnimalRecordSaved(){
         AlertDialog.Builder builder = new AlertDialog.Builder(AnimalDetailActivity.this);
-        builder.setMessage("Animal Record has been saved.")
+        builder.setMessage(getString(R.string.alert_record_saved))
                 .setCancelable(false)
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mode = "V";
                         fillExistingAnimal(getText(mAnimalId));
+
                         dialog.cancel();
 
                         //Intent intent = new Intent(getApplicationContext(),MainActivity.class);
@@ -1760,7 +1885,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
             MimeRecord countryRecord = new MimeRecord();
             countryRecord.setMimeType("cci/animalcountry");
-            countryRecord.setData(getText(mCountry).getBytes("UTF-8"));
+            countryRecord.setData(String.valueOf(mCountry2.getSelectedItemPosition()).getBytes("UTF-8"));
             message.add(countryRecord);
 
         }catch (Exception e){
@@ -1848,6 +1973,9 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     @Override
     protected void writeNdefSuccess() {
         //toast(getString(R.string.ndefWriteSuccess));
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        nfcScanSaveTimestamp=dateFormatter.format(cal.getTime());
     }
 
     /**

@@ -26,7 +26,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/supervisor"
+        android:text="@string/dispersal_ic"
         android:id="@+id/supervisor"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
@@ -45,7 +45,7 @@
         android:id="@+id/animal_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/type"
+        android:text="@string/animal_type"
         android:layout_below="@+id/date_distributed"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

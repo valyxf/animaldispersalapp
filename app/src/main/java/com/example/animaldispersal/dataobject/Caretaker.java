@@ -25,6 +25,8 @@ public class Caretaker implements Parcelable {
     private String createTimestamp;
     private String sync;
     private String sync_message;
+    private String nfcScanEntryTimestamp;
+    private String nfcScanSaveTimestamp;
 
     @Override
     public int describeContents() {
@@ -48,6 +50,8 @@ public class Caretaker implements Parcelable {
         out.writeString(createTimestamp);
         out.writeString(sync);
         out.writeString(sync_message);
+        out.writeString(nfcScanEntryTimestamp);
+        out.writeString(nfcScanSaveTimestamp);
     }
 
     public static final Parcelable.Creator<Caretaker> CREATOR
@@ -77,6 +81,8 @@ public class Caretaker implements Parcelable {
         createTimestamp = in.readString();
         sync = in.readString();
         sync_message = in.readString();
+        nfcScanEntryTimestamp  = in.readString();
+        nfcScanSaveTimestamp  = in.readString();
     }
 
     public Caretaker(){}
@@ -89,7 +95,9 @@ public class Caretaker implements Parcelable {
                       String mCaretakerAddr1,
                       String mCaretakerAddr2,
                       String mCaretakerAddr3,
-                      String mRecordType){
+                      String mRecordType,
+                      String mNfcScanEntryTimestamp,
+                      String mNfcScanSaveTimestamp){
         animalId = mAnimalId;
         caretakerId = mCaretakerId;
         caretakerUid = mCaretakerUid;
@@ -99,6 +107,8 @@ public class Caretaker implements Parcelable {
         caretakerAddr2 = mCaretakerAddr2;
         caretakerAddr3 = mCaretakerAddr3;
         recordType = mRecordType;
+        nfcScanEntryTimestamp = mNfcScanEntryTimestamp;
+        nfcScanSaveTimestamp = mNfcScanSaveTimestamp;
     }
 
     public String getCaretakerUid() {        return caretakerUid;    }
@@ -211,6 +221,14 @@ public class Caretaker implements Parcelable {
 
     public void setAnimalId(String animalId) {this.animalId = animalId;}
 
+    public String getNfcScanEntryTimestamp() {return nfcScanEntryTimestamp;}
+
+    public void setNfcScanEntryTimestamp(String nfcScanEntryTimestamp) {this.nfcScanEntryTimestamp = nfcScanEntryTimestamp;}
+
+    public String getNfcScanSaveTimestamp() {return nfcScanSaveTimestamp; }
+
+    public void setNfcScanSaveTimestamp(String nfcScanSaveTimestamp) {this.nfcScanSaveTimestamp = nfcScanSaveTimestamp;}
+
     @Override
     public String toString() {
         return "Caretaker{" +
@@ -224,6 +242,8 @@ public class Caretaker implements Parcelable {
                 ", recordType='" + recordType + '\'' +
                 ", sync='" + sync + '\'' +
                 ", sync_message='" + sync_message + '\'' +
+                ", nfcScanEntryTimestamp='" + nfcScanEntryTimestamp + '\'' +
+                ", nfcScanSaveTimestamp='" + nfcScanSaveTimestamp + '\'' +
                 '}';
     }
 

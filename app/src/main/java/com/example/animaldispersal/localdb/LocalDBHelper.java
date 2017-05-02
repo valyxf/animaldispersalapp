@@ -104,6 +104,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("DATE_SOLD", animal.getDateSold());
         contentValues.put("SALE_PRICE", animal.getSalePrice());
         contentValues.put("RECORD_TYPE", animal.getRecordType());
+        contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", animal.getNfcScanEntryTimestamp());
+        contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", animal.getNfcScanSaveTimestamp());
 
         Calendar cal = Calendar.getInstance();;
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -136,7 +138,7 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                     eventsContentValues.put("ANIMAL_ID", j.getAnimalId());
                     eventsContentValues.put("EVENT_ID", j.getEventId());
                     eventsContentValues.put("EVENT_TYPE", j.getEventType());
-                    eventsContentValues.put("EVENT_TIMESTAMP", j.getEventDateTime());
+                    eventsContentValues.put("EVENT_TIMESTAMP", j.getEventDate());
                     eventsContentValues.put("EVENT_REMARKS", j.getEventRemarks());
                     eventsContentValues.put("RECORD_TYPE", "D");
 
@@ -164,9 +166,12 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         eventsContentValues.put("ANIMAL_ID", event.getAnimalId());
         eventsContentValues.put("EVENT_ID", event.getEventId());
         eventsContentValues.put("EVENT_TYPE", event.getEventType());
-        eventsContentValues.put("EVENT_TIMESTAMP", event.getEventDateTime());
+        eventsContentValues.put("EVENT_DATE", event.getEventDate());
+        eventsContentValues.put("EVENT_TIMESTAMP", event.getEventTime());
         eventsContentValues.put("EVENT_REMARKS", event.getEventRemarks());
         eventsContentValues.put("RECORD_TYPE", event.getRecordType());
+        eventsContentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", event.getNfcScanEntryTimestamp());
+        eventsContentValues.put("NFC_SCAN_SAVE_TIMESTAMP", event.getNfcScanSaveTimestamp());
 
         eventsContentValues.put("CREATE_USER", username);
         eventsContentValues.put("CREATE_TIMESTAMP", dateFormatter.format(cal.getTime()));
@@ -191,6 +196,9 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("CARETAKER_ADDR_2", caretaker.getCaretakerAddr2());
         contentValues.put("CARETAKER_ADDR_3", caretaker.getCaretakerAddr3());
         contentValues.put("RECORD_TYPE", caretaker.getRecordType());
+        contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", caretaker.getNfcScanEntryTimestamp());
+        contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", caretaker.getNfcScanSaveTimestamp());
+
 
         Calendar cal = Calendar.getInstance();;
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -220,6 +228,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("DATE_DISTRIBUTED", queryvalues.get("DATE_DISTRIBUTED"));
         contentValues.put("DATE_SOLD", queryvalues.get("DATE_SOLD"));
         contentValues.put("SALE_PRICE", queryvalues.get("SALE_PRICE"));
+        contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", queryvalues.get("NFC_SCAN_ENTRY_TIMESTAMP"));
+        contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", queryvalues.get("NFC_SCAN_SAVE_TIMESTAMP"));
         contentValues.put("CREATE_USER", queryvalues.get("CREATE_USER"));
         contentValues.put("CREATE_TIMESTAMP", queryvalues.get("CREATE_TIMESTAMP"));
 
@@ -234,12 +244,14 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("ANIMAL_ID", queryvalues.get("ANIMAL_ID"));
         contentValues.put("EVENT_ID", queryvalues.get("EVENT_ID"));
         contentValues.put("EVENT_TYPE", queryvalues.get("EVENT_TYPE"));
-        contentValues.put("EVENT_TIMESTAMP", queryvalues.get("EVENT_DATE_TIME"));
+        contentValues.put("EVENT_DATE", queryvalues.get("EVENT_DATE"));
+        contentValues.put("EVENT_TIMESTAMP", queryvalues.get("EVENT_TIME"));
         contentValues.put("EVENT_REMARKS", queryvalues.get("EVENT_REMARKS"));
         contentValues.put("RECORD_TYPE", queryvalues.get("RECORD_TYPE"));
+        contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", queryvalues.get("NFC_SCAN_ENTRY_TIMESTAMP"));
+        contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", queryvalues.get("NFC_SCAN_SAVE_TIMESTAMP"));
         contentValues.put("CREATE_USER", queryvalues.get("CREATE_USER"));
         contentValues.put("CREATE_TIMESTAMP", queryvalues.get("CREATE_TIMESTAMP"));
-
         database.insert("SERVER_EVENT_TABLE", null, contentValues);
 
     }
@@ -257,6 +269,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("CARETAKER_ADDR_2", queryvalues.get("CARETAKER_ADDR_2"));
         contentValues.put("CARETAKER_ADDR_3", queryvalues.get("CARETAKER_ADDR_3"));
         contentValues.put("RECORD_TYPE", queryvalues.get("RECORD_TYPE"));
+        contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", queryvalues.get("NFC_SCAN_ENTRY_TIMESTAMP"));
+        contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", queryvalues.get("NFC_SCAN_SAVE_TIMESTAMP"));
         contentValues.put("CREATE_USER", queryvalues.get("CREATE_USER"));
         contentValues.put("CREATE_TIMESTAMP", queryvalues.get("CREATE_TIMESTAMP"));
 
@@ -722,7 +736,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                 newEvent.setAnimalId(id);
                 newEvent.setEventId(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_ID")));
                 newEvent.setEventType(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TYPE")));
-                newEvent.setEventDateTime(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TIMESTAMP")));
+                newEvent.setEventDate(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_DATE")));
+                newEvent.setEventTime(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TIMESTAMP")));
                 newEvent.setEventRemarks(eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_REMARKS")));
                 newEvent.setRecordType(eventCursor.getString(eventCursor.getColumnIndexOrThrow("RECORD_TYPE")));
                 newEvent.setLastUpdateUser(eventCursor.getString(eventCursor.getColumnIndexOrThrow("LAST_UPDATE_USER")));
@@ -935,6 +950,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                     animalJson.put("create_user",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_USER")));
                     animalJson.put("create_timestamp",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
                     animalJson.put("record_type",animalCursor.getString(animalCursor.getColumnIndexOrThrow("RECORD_TYPE")));
+                    animalJson.put("nfc_scan_entry_timestamp",animalCursor.getString(animalCursor.getColumnIndexOrThrow("NFC_SCAN_ENTRY_TIMESTAMP")));
+                    animalJson.put("nfc_scan_save_timestamp",animalCursor.getString(animalCursor.getColumnIndexOrThrow("NFC_SCAN_SAVE_TIMESTAMP")));
                     //animalJson.put("editable",animalCursor.getString(animalCursor.getColumnIndexOrThrow("ANIMAL_EDITABLE")));
 
                     /*
@@ -995,11 +1012,14 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                     eventJson.put("animal_id",eventCursor.getString(eventCursor.getColumnIndexOrThrow("ANIMAL_ID")));
                     eventJson.put("event_id",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_ID")));
                     eventJson.put("event_type",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TYPE")));
-                    eventJson.put("event_date_time",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TIMESTAMP")));
+                    eventJson.put("event_date",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_DATE")));
+                    eventJson.put("event_time",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TIMESTAMP")));
                     eventJson.put("event_remarks",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_REMARKS")));
                     eventJson.put("create_user",eventCursor.getString(eventCursor.getColumnIndexOrThrow("CREATE_USER")));
                     eventJson.put("create_timestamp",eventCursor.getString(eventCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
                     eventJson.put("record_type",eventCursor.getString(eventCursor.getColumnIndexOrThrow("RECORD_TYPE")));
+                    eventJson.put("nfc_scan_entry_timestamp",eventCursor.getString(eventCursor.getColumnIndexOrThrow("NFC_SCAN_ENTRY_TIMESTAMP")));
+                    eventJson.put("nfc_scan_save_timestamp",eventCursor.getString(eventCursor.getColumnIndexOrThrow("NFC_SCAN_SAVE_TIMESTAMP")));
 
                     jsonEvents.put("param_"+j,eventJson);
                     j++;
@@ -1038,6 +1058,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                     caretakerJson.put("create_user",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CREATE_USER")));
                     caretakerJson.put("create_timestamp",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
                     caretakerJson.put("record_type",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("RECORD_TYPE")));
+                    caretakerJson.put("nfc_scan_entry_timestamp",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("NFC_SCAN_ENTRY_TIMESTAMP")));
+                    caretakerJson.put("nfc_scan_save_timestamp",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("NFC_SCAN_SAVE_TIMESTAMP")));
 
                     jsonCaretakers.put("param_"+c,caretakerJson);
                     c++;
@@ -1060,148 +1082,6 @@ public class LocalDBHelper extends SQLiteOpenHelper {
             jsonParam.put("animal", jsonAnimals);
             jsonParam.put("event", jsonEvents);
             jsonParam.put("caretaker",jsonCaretakers);
-            params.put("params", jsonParam.toString());
-
-        } catch (Exception e) {
-            Log.d(TAG, "Error in Map:getAll");
-            e.printStackTrace();
-        }
-        return params;
-    }
-
-    public Map getAllAnimalMap2(){
-
-        SQLiteDatabase db = getReadableDatabase();
-
-        Cursor animalCursor = db.rawQuery("SELECT * FROM ANIMAL_TABLE WHERE " +
-                        //countryClause +
-                        "ACTIVE_FLAG = 'A'"
-                , null);
-
-        JSONObject jsonAnimals = new JSONObject();
-        JSONObject animalJson = null;
-        String price;
-        String date;
-        int i = 1;
-        try {
-            if (animalCursor.moveToFirst()) {
-                do {
-                    animalJson = new JSONObject();
-
-                    animalJson.put("animal_id",animalCursor.getString(animalCursor.getColumnIndexOrThrow("ANIMAL_ID")));
-                    animalJson.put("supervisor",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SUPERVISOR")));
-                    animalJson.put("caretaker_uid",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CARETAKER_UID")));
-                    animalJson.put("animal_type",animalCursor.getString(animalCursor.getColumnIndexOrThrow("ANIMAL_TYPE")));
-                    animalJson.put("gender",animalCursor.getString(animalCursor.getColumnIndexOrThrow("GENDER")));
-                    animalJson.put("date_of_birth",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_OF_BIRTH")));
-                    animalJson.put("country",animalCursor.getString(animalCursor.getColumnIndexOrThrow("COUNTRY")));
-                    animalJson.put("date_purchased",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_PURCHASED")));
-                    animalJson.put("purchase_price",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_PRICE")));
-                    animalJson.put("date_distributed",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_DISTRIBUTED")));
-                    animalJson.put("date_sold",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_SOLD")));
-                    animalJson.put("sale_price",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_PRICE")));
-                    animalJson.put("create_user",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_USER")));
-                    animalJson.put("create_timestamp",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
-
-                    // START GET EVENT JSON OBJECT
-                    Cursor eventCursor = db.rawQuery("SELECT * FROM EVENT_TABLE WHERE ACTIVE_FLAG = 'A' AND ANIMAL_ID = '"
-                            +animalCursor.getString(animalCursor.getColumnIndexOrThrow("ANIMAL_ID"))+"'" , null);
-                    JSONObject jsonEvents = new JSONObject();
-                    JSONObject eventJson = null;
-                    int j = 1;
-                    try {
-                        if (eventCursor.moveToFirst()) {
-                            do {
-                                eventJson = new JSONObject();
-
-                                eventJson.put("animal_id",eventCursor.getString(eventCursor.getColumnIndexOrThrow("ANIMAL_ID")));
-                                eventJson.put("event_id",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_ID")));
-                                eventJson.put("event_type",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TYPE")));
-                                eventJson.put("event_date_time",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_TIMESTAMP")));
-                                eventJson.put("event_remarks",eventCursor.getString(eventCursor.getColumnIndexOrThrow("EVENT_REMARKS")));
-                                eventJson.put("create_user",eventCursor.getString(eventCursor.getColumnIndexOrThrow("CREATE_USER")));
-                                eventJson.put("create_timestamp",eventCursor.getString(eventCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
-
-                                jsonEvents.put("param_"+j,eventJson);
-                                j++;
-
-                            } while(eventCursor.moveToNext());
-                        }
-                    } catch (Exception e) {
-                        Log.d(TAG, "Error in Map:getAllEvents");
-                        e.printStackTrace();
-                    }
-                    finally {
-                        if (eventCursor != null && !eventCursor.isClosed()) {
-                            eventCursor.close();
-                        }
-                    }
-                    animalJson.put("event",jsonEvents);
-                    //END GET EVENT JSON OBJECT
-
-                    //START GET CARETAKER JSON OBJECT
-                    String animalCaretakerQuery =
-                            "SELECT C.* FROM CARETAKER_TABLE C, ANIMAL_TABLE A " +
-                            "WHERE C.ACTIVE_FLAG = 'A' AND " +
-                            "A.ACTIVE_FLAG = 'A' AND " +
-                            "A."+
-                            //countryClause +
-                            "A.ANIMAL_ID = '" +animalCursor.getString(eventCursor.getColumnIndexOrThrow("ANIMAL_ID"))+"' AND " +
-                            "A.CARETAKER_UID = C.CARETAKER_UID";
-                    Log.d(TAG, "animalCaretakerQuery: "+animalCaretakerQuery);
-                    Cursor caretakerCursor = db.rawQuery(animalCaretakerQuery, null);
-                    JSONObject caretakerJson = null;
-                    int c = 1;
-                    try {
-                        if (caretakerCursor.moveToFirst()) {
-                            do {
-                                caretakerJson = new JSONObject();
-                                caretakerJson.put("caretaker_id",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_ID")));
-                                caretakerJson.put("caretaker_uid",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_UID")));
-                                caretakerJson.put("caretaker_name",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_NAME")));
-                                caretakerJson.put("caretaker_tel",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_TEL")));
-                                caretakerJson.put("caretaker_addr_1",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_ADDR_1")));
-                                caretakerJson.put("caretaker_addr_2",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_ADDR_2")));
-                                caretakerJson.put("caretaker_addr_3",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CARETAKER_ADDR_3")));
-                                caretakerJson.put("create_user",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CREATE_USER")));
-                                caretakerJson.put("create_timestamp",caretakerCursor.getString(caretakerCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
-                                break;
-
-                            } while(caretakerCursor.moveToNext());
-                        }
-                    } catch (Exception e) {
-                        Log.d(TAG, "Error in Map:getAllCaretaker");
-                        e.printStackTrace();
-                    }
-                    finally {
-                        if (caretakerCursor != null && !caretakerCursor.isClosed()) {
-                            caretakerCursor.close();
-                        }
-                    }
-                    animalJson.put("caretaker",caretakerJson);
-                    //END GET CARETAKER JSON OBJECT
-
-                    jsonAnimals.put("param_"+i,animalJson);
-                    i++;
-
-                } while(animalCursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "Error in Map:getAllAnimals");
-            e.printStackTrace();
-        }
-        finally {
-            if (animalCursor != null && !animalCursor.isClosed()) {
-                animalCursor.close();
-            }
-        }
-
-        HashMap<String, String> params = new HashMap<String, String>();
-        try {
-            JSONObject jsonParam = new JSONObject();
-            jsonParam.put("animal", jsonAnimals);
-            //jsonParam.put("event", jsonEvents);
-            //jsonParam.put("caretaker",jsonCaretakers);
             params.put("params", jsonParam.toString());
 
         } catch (Exception e) {

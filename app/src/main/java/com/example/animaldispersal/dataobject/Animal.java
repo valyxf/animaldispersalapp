@@ -29,6 +29,9 @@ public class Animal implements Parcelable {
     private String caretakerUid;
     private String sync;
     private String sync_message;
+    private String nfcScanEntryTimestamp;
+    private String nfcScanSaveTimestamp;
+
 
     //private List<Event> events;
 
@@ -58,6 +61,8 @@ public class Animal implements Parcelable {
         out.writeString(createTimestamp);
         out.writeString(sync);
         out.writeString(sync_message);
+        out.writeString(nfcScanEntryTimestamp);
+        out.writeString(nfcScanSaveTimestamp);
 
 
     }
@@ -93,6 +98,8 @@ public class Animal implements Parcelable {
         createTimestamp = in.readString();
         sync = in.readString();
         sync_message  = in.readString();
+        nfcScanEntryTimestamp  = in.readString();
+        nfcScanSaveTimestamp  = in.readString();
     }
 
     public Animal(){
@@ -111,7 +118,9 @@ public class Animal implements Parcelable {
                   String mDateSold,
                   String mSalePrice,
                   String mCaretakerUid,
-                  String mRecordType){
+                  String mRecordType,
+                  String mNfcScanEntryTimestamp,
+                  String mNfcScanSaveTimestamp){
         animalId = mAnimalId;
         supervisor = mSupervisor;
         animalType = mAnimalType;
@@ -125,6 +134,8 @@ public class Animal implements Parcelable {
         salePrice  = mSalePrice;
         caretakerUid = mCaretakerUid;
         recordType = mRecordType;
+        nfcScanEntryTimestamp = mNfcScanEntryTimestamp;
+        nfcScanSaveTimestamp = mNfcScanSaveTimestamp;
 
     }
 
@@ -236,9 +247,7 @@ public class Animal implements Parcelable {
         return lastUpdateTimestamp;
     }
 
-    public void setLastUpdateTimestamp(String lastUpdateTimestamp) {
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
-    }
+    public void setLastUpdateTimestamp(String lastUpdateTimestamp) { this.lastUpdateTimestamp = lastUpdateTimestamp;}
 
     public String getCreateUser() {
         return createUser;
@@ -252,9 +261,7 @@ public class Animal implements Parcelable {
         return createTimestamp;
     }
 
-    public void setCreateTimestamp(String createTimestamp) {
-        this.createTimestamp = createTimestamp;
-    }
+    public void setCreateTimestamp(String createTimestamp) { this.createTimestamp = createTimestamp;}
 
     public String getCaretakerUid() {
         return caretakerUid;
@@ -269,6 +276,14 @@ public class Animal implements Parcelable {
     public String getSync_message() {return sync_message;}
 
     public void setSync_message(String sync_message) {this.sync_message = sync_message;}
+
+    public String getNfcScanEntryTimestamp() {return nfcScanEntryTimestamp;}
+
+    public void setNfcScanEntryTimestamp(String nfcScanEntryTimestamp) {this.nfcScanEntryTimestamp = nfcScanEntryTimestamp;}
+
+    public String getNfcScanSaveTimestamp() {return nfcScanSaveTimestamp; }
+
+    public void setNfcScanSaveTimestamp(String nfcScanSaveTimestamp) {this.nfcScanSaveTimestamp = nfcScanSaveTimestamp;}
 
     @Override
     public String toString() {
@@ -292,6 +307,8 @@ public class Animal implements Parcelable {
                 ", caretakerId='" + caretakerUid + '\'' +
                 ", sync='" + sync + '\'' +
                 ", sync_message='" + sync_message + '\'' +
+                ", nfcScanEntryTimestamp='" + nfcScanEntryTimestamp + '\'' +
+                ", nfcScanSaveTimestamp='" + nfcScanSaveTimestamp + '\'' +
                 '}';
     }
 

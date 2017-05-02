@@ -14,7 +14,8 @@ public class Event implements Parcelable {
     private String animalId;
     private String eventId;
     private String eventType;
-    private String eventDateTime;
+    private String eventDate;
+    private String eventTime;
     private String eventRemarks;
     private String recordType;
     private Boolean eventUpdated=false;
@@ -24,6 +25,8 @@ public class Event implements Parcelable {
     private String createTimestamp;
     private String sync;
     private String sync_message;
+    private String nfcScanEntryTimestamp;
+    private String nfcScanSaveTimestamp;
 
 
 
@@ -37,7 +40,8 @@ public class Event implements Parcelable {
         out.writeString(animalId);
         out.writeString(eventId);
         out.writeString(eventType);
-        out.writeString(eventDateTime);
+        out.writeString(eventDate);
+        out.writeString(eventTime);
         out.writeString(eventRemarks);
         out.writeString(recordType);
         out.writeByte((byte) (eventUpdated ? 1 : 0));
@@ -47,6 +51,8 @@ public class Event implements Parcelable {
         out.writeString(createTimestamp);
         out.writeString(sync);
         out.writeString(sync_message);
+        out.writeString(nfcScanEntryTimestamp);
+        out.writeString(nfcScanSaveTimestamp);
 
 
     }
@@ -66,7 +72,8 @@ public class Event implements Parcelable {
         animalId = in.readString();
         eventId = in.readString();
         eventType = in.readString();
-        eventDateTime = in.readString();
+        eventDate = in.readString();
+        eventTime = in.readString();
         eventRemarks = in.readString();
         recordType = in.readString();
         eventUpdated = in.readByte() != 0;
@@ -76,17 +83,22 @@ public class Event implements Parcelable {
         createTimestamp = in.readString();
         sync = in.readString();
         sync_message = in.readString();
+        nfcScanEntryTimestamp  = in.readString();
+        nfcScanSaveTimestamp  = in.readString();
     }
 
     public Event(
             String mEventId,
             String mEventType,
-            String mEventDateTime,
-            String mEventRemarks) {
+            String mEventDate,
+            String mEventTime,
+            String mEventRemarks)
+    {
 
         eventId = mEventId;
         eventType = mEventType;
-        eventDateTime = mEventDateTime;
+        eventDate = mEventDate;
+        eventTime = mEventTime;
         eventRemarks = mEventRemarks;
         recordType = "N";
     }
@@ -107,13 +119,9 @@ public class Event implements Parcelable {
         this.eventType = eventType;
     }
 
-    public String getEventDateTime() {
-        return eventDateTime;
-    }
+    public String getEventDate() {return eventDate;}
 
-    public void setEventDateTime(String eventDateTime) {
-        this.eventDateTime = eventDateTime;
-    }
+    public void setEventDate(String eventDate) {this.eventDate = eventDate;}
 
     public String getEventRemarks() {
         return eventRemarks;
@@ -184,16 +192,30 @@ public class Event implements Parcelable {
 
     public void setEventUpdated(Boolean eventUpdated) {this.eventUpdated = eventUpdated;}
 
+    public String getEventTime() {return eventTime;}
+
+    public void setEventTime(String eventTime) {this.eventTime = eventTime;}
+
+    public String getNfcScanEntryTimestamp() {return nfcScanEntryTimestamp;}
+
+    public void setNfcScanEntryTimestamp(String nfcScanEntryTimestamp) {this.nfcScanEntryTimestamp = nfcScanEntryTimestamp;}
+
+    public String getNfcScanSaveTimestamp() {return nfcScanSaveTimestamp; }
+
+    public void setNfcScanSaveTimestamp(String nfcScanSaveTimestamp) {this.nfcScanSaveTimestamp = nfcScanSaveTimestamp;}
+
     @Override
     public String toString() {
-        return eventId+"/"+eventType+"/"+eventDateTime+"/"+eventRemarks+"/"+recordType+"/"+eventUpdated.toString();
+        return eventId+"/"+eventType+"/"+ eventDate +"/"+eventTime+"/"+eventRemarks+"/"+recordType+"/"+eventUpdated.toString()
+                +"/"+nfcScanEntryTimestamp+"/"+nfcScanSaveTimestamp;
     }
 
     public boolean equals(Event event){
         if (event == null) return false;
         if (!ObjectUtils.equals(getEventId(), event.getEventId())) return false;
         if (!ObjectUtils.equals(getEventType(), event.getEventType())) return false;
-        if (!ObjectUtils.equals(getEventDateTime(), event.getEventDateTime())) return false;
+        if (!ObjectUtils.equals(getEventTime(), event.getEventTime())) return false;
+        if (!ObjectUtils.equals(getEventDate(), event.getEventDate())) return false;
         if (!ObjectUtils.equals(getEventRemarks(), event.getEventRemarks())) return false;
         return true;
     }

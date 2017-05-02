@@ -406,12 +406,13 @@ public abstract class NfcDetectActivity extends AppCompatActivity {
         this.detecting = detecting;
     }
 
-    public void setScanOff(){
-        this.scanOn = false;
+    public void setScanOn(boolean on){
+        if (on) this.scanOn = true;
+        else this.scanOn = false;
     }
 
-    public void setScanOn(){
-        this.scanOn = true;
+    public boolean getScanOn(){
+        return this.scanOn;
     }
 
 }

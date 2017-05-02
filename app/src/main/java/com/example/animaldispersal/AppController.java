@@ -34,7 +34,7 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //TODO Stetho Debugging
+        //Stetho Debugging
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
@@ -45,22 +45,6 @@ public class AppController extends Application {
 
         mInstance = this;
         mPrefs = getSharedPreferences("animalDispersalPrefs", Context.MODE_PRIVATE);
-
-        //LOCALE CONFIGURATION SETTING
-        Log.d(TAG, "APPLICATION ONCREATE");
-        Configuration config = getBaseContext().getResources().getConfiguration();
-        String lang = mPrefs.getString("locale", "");
-        Log.d(TAG, "locale: "+lang);
-        if (! "".equals(lang) && ! config.locale.getLanguage().equals(lang))
-        {
-            locale = new Locale(lang);
-            Locale.setDefault(locale);
-            config.locale = locale;
-            getBaseContext().getResources().updateConfiguration(config,  getResources().getDisplayMetrics());
-        }
-        else {
-
-        }
 
         //TODO Bugfender- remove this at live
         Bugfender.init(this, "KZv9hHwV0weAvKcsn9qewAcow0TmaBLi", BuildConfig.DEBUG);
@@ -75,27 +59,14 @@ public class AppController extends Application {
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "APPLICATION CONFIG CHANGE");
+        Log.d(TAG, "AppController onConfigurationChanged "+newConfig.locale.getDisplayLanguage());
 
-        Configuration modConfig = new Configuration(newConfig);;
-        String lang = mPrefs.getString("locale", "");
-        Log.d(TAG, "locale: "+lang);
-        if (! "".equals(lang) && ! modConfig.locale.getLanguage().equals(lang))
-        {
-            locale = new Locale(lang);
-            Locale.setDefault(locale);
-            modConfig.locale = locale;
-            getBaseContext().getResources().updateConfiguration(modConfig,  getResources().getDisplayMetrics());
-        }
-        /*
-        if (locale != null)
-        {
-            newConfig.locale = locale;
-            Locale.setDefault(locale);
-            getBaseContext().getResources().updateConfiguration(newConfig, getResources().getDisplayMetrics());
-        }
-        */
+        super.onConfigurationChanged(newConfig);
+        Configuration modConfig = new Configuration(newConfig);
+        Locale l = getLocale();
+        modConfig.setLocale(l);
+        getBaseContext().getResources().updateConfiguration(modConfig, getBaseContext().getResources().getDisplayMetrics());
+
     }
 
     public RequestQueue getRequestQueue() {

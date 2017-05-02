@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- DECAPRECATED
     <item android:id="@+id/search_icon"
         android:title="@string/search_hint"
         android:icon="@drawable/ic_action_search"
-    app:showAsAction="always"/>
+        app:showAsAction="always"
+        /-->
     <item
         android:id="@+id/settings"
-        android:title="Settings"
-        app:showAsAction="never" >
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="always" >
     </item>
-    <!-- TODO TO BE REMOVED WHEN LIVE
-    <item
-        android:id="@+id/add_animal"
-        android:title="Add Animal (TBR)"
-        app:showAsAction="never" >
-    </item>
+<!-- TODO TO BE REMOVED WHEN LIVE-->
     <item
         android:id="@+id/tag_lock"
         android:title="Turn off Tag Lock (TBR)"
+        app:showAsAction="never" >
+    </item>
+    <!-- DECAPRECATED
+    <item
+        android:id="@+id/add_animal"
+        android:title="Add Animal (TBR)"
         app:showAsAction="never" >
     </item-->
 </menu>

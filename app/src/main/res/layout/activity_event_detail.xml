@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,101 +13,98 @@
     tools:context="com.example.animaldispersal.EventDetailActivity"
     >
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_details"
-        android:id="@+id/textView16"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        style="@style/sectionHeader"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_type"
-        android:id="@+id/textView1"
-        android:layout_alignBaseline="@+id/event_type"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/event_type"
-        android:layout_below="@+id/event_date_time"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:imeOptions="flagNoExtractUi|actionNext"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:inputType="textCapSentences"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_date_time"
-        android:id="@+id/textView2"
-        android:layout_alignBaseline="@+id/event_date_time"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                style="@style/sectionHeaderBar">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/event_details"
+                        android:id="@+id/textView16"
+                        style="@style/sectionHeaderText"/>
+            </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/event_type"
+                    android:id="@+id/textView1" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/event_type"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Event Date"
+                    android:id="@+id/textView2" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/event_date_time"
-        android:layout_below="@+id/textView16"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:imeOptions="flagNoExtractUi|actionNext"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:focusable="false"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_remarks"
-        android:id="@+id/textView3"
-        android:layout_alignBaseline="@+id/event_remarks"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-    <EditText
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
-        android:id="@+id/event_remarks"
-        android:layout_below="@+id/event_type"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:imeOptions="flagNoExtractUi|actionNext"
-        android:gravity="left|top"
-        android:inputType="textMultiLine|textCapSentences"
-        android:maxLength ="2000"
-        android:scrollHorizontally="false"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/event_date"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:focusable="false" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/done"
-        android:id="@+id/button8"
-        android:layout_below="@+id/event_remarks"
-        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Event Time"
+                    android:id="@+id/textView4"
+                    />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel"
-        android:id="@+id/button9"
-        android:layout_alignTop="@+id/button8"
-        android:layout_toRightOf="@+id/button8"
-        android:layout_toEndOf="@+id/button8" />
-        </RelativeLayout>
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:focusable="false"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:id="@+id/event_time" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/event_remarks"
+                    android:id="@+id/textView3" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/event_remarks"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:gravity="left|top"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLength ="2000"
+                    android:scrollHorizontally="false"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/done"
+                    android:id="@+id/button8" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel"
+                    android:id="@+id/button9" />
+            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

@@ -11,6 +11,7 @@ public class EventTable {
     public static final String COLUMN_ANIMAL_ID="ANIMAL_ID";
     public static final String COLUMN_EVENT_ID="EVENT_ID";
     public static final String COLUMN_EVENT_TYPE="EVENT_TYPE";
+    public static final String COLUMN_EVENT_DATE="EVENT_DATE";
     public static final String COLUMN_EVENT_TIMESTAMP="EVENT_TIMESTAMP";
     public static final String COLUMN_EVENT_REMARKS="EVENT_REMARKS";
     public static final String COLUMN_RECORD_TYPE="RECORD_TYPE";
@@ -22,6 +23,8 @@ public class EventTable {
     public static final String COLUMN_CREATE_TIMESTAMP="CREATE_TIMESTAMP";
     public static final String COLUMN_SYNC="SYNC";
     public static final String COLUMN_SYNC_MESSAGE="SYNC_MESSAGE";
+    public static final String COLUMN_NFC_SCAN_ENTRY_TIMESTAMP="NFC_SCAN_ENTRY_TIMESTAMP";
+    public static final String COLUMN_NFC_SCAN_SAVE_TIMESTAMP="NFC_SCAN_SAVE_TIMESTAMP";
 
 
 
@@ -33,6 +36,7 @@ public class EventTable {
             +	COLUMN_ANIMAL_ID	+ " text not null, "
             +	COLUMN_EVENT_ID	+ " text not null, "
             +	COLUMN_EVENT_TYPE	+ " text not null, "
+            +	COLUMN_EVENT_DATE	+ " text not null, "
             +	COLUMN_EVENT_TIMESTAMP	+ " text not null, "
             +	COLUMN_EVENT_REMARKS	+ " text, "
             +   COLUMN_RECORD_TYPE + " text, "
@@ -43,8 +47,9 @@ public class EventTable {
             +   COLUMN_DELETE_USER + " text, "
             +   COLUMN_DELETE_TIMESTAMP + " text, "
             +   COLUMN_CREATE_USER + " text, "
-            +   COLUMN_CREATE_TIMESTAMP + " text "
-
+            +   COLUMN_CREATE_TIMESTAMP + " text, "
+            +   COLUMN_NFC_SCAN_ENTRY_TIMESTAMP + " text, "
+            +   COLUMN_NFC_SCAN_SAVE_TIMESTAMP + " text "
             + ");";
 
     public EventTable(Context context) {

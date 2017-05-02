@@ -38,10 +38,12 @@ public class SyncHelper {
     private static final String TAG = SyncHelper.class.getName();
 
     ProgressDialog progressDialog;
+    ProgressDialog progressDialog1;
     LocalDBHelper localDBHelper;
-    String get_keys_url = "http://www.careagriculture.com/get_keys.php";
-    String read_animal_url = "http://www.careagriculture.com/get_all_animals6.php";
-    String insert_animals_url = "http://www.careagriculture.com/insert_animals28.php";
+    //TODO TO BE CHANGE FOR RELEASE
+    String get_keys_url = "http://www.careagriculture.com/uat/get_keys.php";
+    String read_animal_url = "http://www.careagriculture.com/uat/get_all_animals7.php";
+    String insert_animals_url = "http://www.careagriculture.com/uat/insert_animals29.php";
 
     Context context;
 
@@ -69,10 +71,13 @@ public class SyncHelper {
     public static final String TAG_SALE_PRICE = "sale_price";
     public static final String TAG_CREATE_USER = "create_user";
     public static final String TAG_CREATE_TIMESTAMP = "create_timestamp";
+    public static final String TAG_NFC_SCAN_ENTRY_TIMESTAMP = "nfc_scan_entry_timestamp";
+    public static final String TAG_NFC_SCAN_SAVE_TIMESTAMP = "nfc_scan_save_timestamp";
 
     public static final String TAG_EVENT_ID = "event_id";
     public static final String TAG_EVENT_TYPE= "event_type";
-    public static final String TAG_EVENT_DATE_TIME = "event_date_time";
+    public static final String TAG_EVENT_DATE = "event_date";
+    public static final String TAG_EVENT_TIME = "event_time";
     public static final String TAG_EVENT_REMARKS = "event_remarks";
 
     private ArrayList<String> message;
@@ -81,7 +86,7 @@ public class SyncHelper {
     public void DeviceDataUpload() {
 
         progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Data transfer in progress.....");
+        progressDialog.setMessage(context.getString(R.string.device_data_sync_message));
         progressDialog.show();
         message = new ArrayList<String> ();
 
@@ -159,19 +164,23 @@ public class SyncHelper {
                                 }
 
                             }
+                            progressDialog.dismiss();
                             ServerDataDownload();
-                        }catch (JSONException e) {
+                        }catch (Exception e) {
+                            Log.e(TAG, "Exception "+e.toString());
                             e.printStackTrace();
-                            message.add("JSONException: "+e.getMessage());
+                            progressDialog.dismiss();
+                            toast(context.getString(R.string.sync_upload_error));
                         }
-
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-                error.printStackTrace();
+                Log.e(TAG, "onErrorResponse "+error.toString());
                 message.add("onErrorResponse: "+error.getMessage());
+                error.printStackTrace();
+                progressDialog.dismiss();
+                toast(context.getString(R.string.sync_upload_error));
             }
         })
         {
@@ -195,6 +204,10 @@ public class SyncHelper {
 
 
     public void ServerDataDownload(){
+
+        progressDialog1 = new ProgressDialog(context);
+        progressDialog1.setMessage(context.getString(R.string.server_download_sync_message));
+        progressDialog1.show();
 
         StringRequest readAnimalReq = new StringRequest(Method.POST, read_animal_url, new Response.Listener<String>() {
 
@@ -242,6 +255,10 @@ public class SyncHelper {
                                     map.put("CREATE_USER", c.getString(TAG_CREATE_USER));
                                 if (!c.isNull(TAG_CREATE_TIMESTAMP))
                                     map.put("CREATE_TIMESTAMP", c.getString(TAG_CREATE_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_ENTRY_TIMESTAMP))
+                                    map.put("NFC_SCAN_ENTRY_TIMESTAMP", c.getString(TAG_NFC_SCAN_ENTRY_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_SAVE_TIMESTAMP))
+                                    map.put("NFC_SCAN_SAVE_TIMESTAMP", c.getString(TAG_NFC_SCAN_SAVE_TIMESTAMP));
 
                                 localDBHelper.insertAnimalFromServer(map);
 
@@ -269,14 +286,20 @@ public class SyncHelper {
                                 map.put("RECORD_TYPE", "S");
                                 if (!c.isNull(TAG_EVENT_TYPE))
                                     map.put("EVENT_TYPE", c.getString(TAG_EVENT_TYPE));
-                                if (!c.isNull(TAG_EVENT_DATE_TIME))
-                                    map.put("EVENT_DATE_TIME", c.getString(TAG_EVENT_DATE_TIME));
+                                if (!c.isNull(TAG_EVENT_DATE))
+                                    map.put("EVENT_DATE", c.getString(TAG_EVENT_DATE));
+                                if (!c.isNull(TAG_EVENT_TIME))
+                                    map.put("EVENT_TIME", c.getString(TAG_EVENT_TIME));
                                 if (!c.isNull(TAG_EVENT_REMARKS))
                                     map.put("EVENT_REMARKS", c.getString(TAG_EVENT_REMARKS));
                                 if (!c.isNull(TAG_CREATE_USER))
                                     map.put("CREATE_USER", c.getString(TAG_CREATE_USER));
                                 if (!c.isNull(TAG_CREATE_TIMESTAMP))
                                     map.put("CREATE_TIMESTAMP", c.getString(TAG_CREATE_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_ENTRY_TIMESTAMP))
+                                    map.put("NFC_SCAN_ENTRY_TIMESTAMP", c.getString(TAG_NFC_SCAN_ENTRY_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_SAVE_TIMESTAMP))
+                                    map.put("NFC_SCAN_SAVE_TIMESTAMP", c.getString(TAG_NFC_SCAN_SAVE_TIMESTAMP));
 
                                 localDBHelper.insertEventFromServer(map);
 
@@ -314,6 +337,10 @@ public class SyncHelper {
                                     map.put("CREATE_USER", c.getString(TAG_CREATE_USER));
                                 if (!c.isNull(TAG_CREATE_TIMESTAMP))
                                     map.put("CREATE_TIMESTAMP", c.getString(TAG_CREATE_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_ENTRY_TIMESTAMP))
+                                    map.put("NFC_SCAN_ENTRY_TIMESTAMP", c.getString(TAG_NFC_SCAN_ENTRY_TIMESTAMP));
+                                if (!c.isNull(TAG_NFC_SCAN_SAVE_TIMESTAMP))
+                                    map.put("NFC_SCAN_SAVE_TIMESTAMP", c.getString(TAG_NFC_SCAN_SAVE_TIMESTAMP));
                                 map.put("RECORD_TYPE", "S");
                                 localDBHelper.insertCaretakerFromServer(map);
 
@@ -335,13 +362,13 @@ public class SyncHelper {
                     e.printStackTrace();
                     message.add("onErrorResponse: "+e.getMessage());
                 }
-                progressDialog.dismiss();
+                progressDialog1.dismiss();
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
+                progressDialog1.dismiss();
                 message.add("onErrorResponse: "+error.getMessage());
             }
         }){
@@ -354,8 +381,11 @@ public class SyncHelper {
                     message.add(0,message.size()+" error(s):");
                     toast (TextUtils.join("\n -",message));
                     localDBHelper.updateSystemSyncMessage(TextUtils.join("\n",message));
-                } else
+                }
+                else {
+                    localDBHelper.updateSystemSyncMessage(context.getString(R.string.sync_success));
                     toast(context.getString(R.string.sync_success));
+                }
 
                 localDBHelper.updateSystemSyncTimestamp(Calendar.getInstance());
 

@@ -76,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (arg2==2) {
                     mCountry.setVisibility(View.INVISIBLE);
                     mCountryTextView.setVisibility(View.INVISIBLE);
+                    mCountry.setSelection(0);
                 }
                 else{
                     mCountry.setVisibility(View.VISIBLE);
@@ -141,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (role==2)
             country = null;
-        else country = mCountry.getSelectedItem().toString();
+        else country = String.valueOf(mCountry.getSelectedItemPosition());
 
         edit.putInt("role",role);
         edit.putString("country", country);
@@ -159,10 +160,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void notifyNoInternet(){
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-        builder.setTitle("No Internet Connection");
-        builder.setMessage("You need to be connected to the internet to register the user.")
+        builder.setTitle(getString(R.string.heading_no_internet));
+        builder.setMessage(getString(R.string.alert_internet_connection_for_registration))
                 .setCancelable(false)
-                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                         finish();
@@ -201,7 +202,8 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean isFieldsValid(){
         if (mCountry.getSelectedItemId() == AdapterView.INVALID_ROW_ID ||
                 (TextUtils.isEmpty(mUsername.getText().toString().trim())) ||
-                mRole.getSelectedItemId()  == AdapterView.INVALID_ROW_ID )
+                mRole.getSelectedItemId()  == AdapterView.INVALID_ROW_ID ||
+                (mRole.getSelectedItemId() != 2 && mCountry.getSelectedItemPosition() == 0 ))
         {
             toast(getString(R.string.fill_user_country_role));
             return false;
@@ -235,9 +237,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void notifyUserSaved(){
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-        builder.setMessage("New user has been successfully registered.")
+        builder.setMessage(getString(R.string.alert_user_registered))
                 .setCancelable(false)
-                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                         startActivity(new Intent(RegisterActivity.this, MainActivity.class)

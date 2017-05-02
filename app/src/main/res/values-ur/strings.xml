@@ -7,7 +7,7 @@
     <!--NFC Messages-->
     <string name="cannotWriteTechMessage">ٹیک یا اسنروپت ٹیگ نہیں لکھ سکتا.</string>
     <string name="discard_label">منسوخ</string>
-    <string name="ndefWriteFailed">لکھو ٹیگ ناکام:٪ s ہے. دوبارہ کوشش کریں.</string>
+    <string name="ndefWriteFailed">لکھو ٹیگ ناکام: %s. دوبارہ کوشش کریں.</string>
     <string name="ndefWriteSuccess">ٹیگ کامیاب لکھیں.</string>
     <string name="nfcAvailableDisabled">این ایف سی غیر فعال ہے</string>
     <string name="nfcAvailableEnabled">این ایف سی فعال ہے. اسکین کرنے کے لئے تیار ہیں.</string>
@@ -23,7 +23,7 @@
     <string name="readSingleRecordNDEFMessage">ایک کو NDEF پیغام ہے.</string>
     <string name="tagLost">ٹیگ کھو</string>
     <string name="tagNotWritable">ٹیگ قابل تحریر نہیں ہے.</string>
-    <string name="tagTooSmallMessage">پیغام کا سائز٪ 1 $ d کو بائٹس٪ 2 $ d کی بائٹس کی ٹیگ صلاحیت سے زیادہ ہے.</string>
+    <string name="tagTooSmallMessage">پیغام کا سائز %1$d بائٹس %2$d بائٹس کی ٹیگ صلاحیت سے زیادہ ہے.</string>
     <!--UI Strings-->
     <string name="add_event">اہم واقعہ شامل کریں</string>
     <string name="address_line_1">پتہ لائن 1</string>
@@ -99,5 +99,28 @@
     <string name="leave_despite_not_save">تم اس جانور کے ریکارڈ محفوظ نہیں کی ہیں. آپ کو چھوڑ کرنا چاہتے ہیں؟</string>
     <string name="yes">جی ہاں</string>
     <string name="back">پیچھے</string>
+    <string name="device_data_sync_message">آلہ ڈیٹا ترقی میں اپ لوڈ کریں .....</string>
+    <string name="server_download_sync_message">پیش رفت میں سرور ڈیٹا ڈاؤن لوڈ .....</string>
+    <string name="heading_new_animal_registration">نیا جانور رجسٹریشن</string>
+    <string name="heading_animal_record">ANIMAL RECORD</string>
+    <string name="error">خرابی</string>
+    <string name="error_duplicate_animal_id">مثنی جانوروں کی ID پایا.</string>
+    <string name="ok">ٹھیک ہے</string>
+    <string name="heading_event_details">پروگرام کی تفصیلات</string>
+    <string name="heading_new_event_record">نیا اہم واقعہ ریکارڈ</string>
+    <string name="heading_no_internet">کوئی انٹرنیٹ کنکشن</string>
+    <string name="alert_record_saved">جانوروں سے ہونے والی ریکارڈ محفوظ ہوگیا ہے.</string>
+    <string name="alert_rescan_tag">دوبارہ اسکین ٹیگ جانوروں کی رجسٹریشن کی تصدیق کے لئے</string>
+    <string name="alert_internet_connection_for_registration">آپ صارف کو رجسٹر کرنے کے لئے انٹرنیٹ سے منسلک کرنے کی ضرورت ہے.</string>
+    <string name="alert_user_registered">نیا استعمال کو کامیابی سے درج کیا گیا ہے.</string>
+    <string name="btn_register_animal">نیا جانور رجسٹر</string>
+    <string name="update_record_not_synced">معلومات: یہ ریکارڈ موافقت پذیر نہیں کیا گیا ہے. تم کھلے میدانوں اپ ڈیٹ کر سکتے.</string>
+    <string name="update_record_synced">معلومات: یہ ریکارڈ موافقت پذیر کیا گیا ہے. تم صرف نیلے رنگ میں کھیتوں اپ ڈیٹ کر سکتے.</string>
+    <string name="view_record_not_synced">معلومات: یہ ریکارڈ موافقت پذیر نہیں کیا گیا ہے.</string>
+    <string name="info_record_synced">معلومات: یہ ریکارڈ موافقت پذیر کیا گیا ہے.</string>
+    <string name="info_record_fully_filled">معلومات: یہ ریکارڈ موافقت پذیر کیا گیا ہے. تو یہ ترمیم نہیں کی جاسکتی جو ایک مکمل طور پر بھرا ہوا ریکارڈ ہے.</string>
+    <string name="internet_on">مطابقت پذیر کرنے کے لئے تیار ہیں - انٹرنیٹ</string>
+    <string name="internet_off">انٹرنیٹ بند - مطابقت پذیر کرنے کے لئے تیار نہیں</string>
+    <string name="num_records_not_synced">%1$d ریکارڈز کی مطابقت پذیر نہیں کیا گیا ہے</string>
     <string name="app_name">CCI Animal Dispersal</string>
 </resources>

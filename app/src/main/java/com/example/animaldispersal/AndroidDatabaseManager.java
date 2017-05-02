@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.animaldispersal.localdb.LocalDBHelper;
+import com.example.davaodemo.R;
 
 public class AndroidDatabaseManager extends Activity implements OnItemClickListener {
 
@@ -592,7 +593,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	                    							.setTitle("values")
 	                    							.setCancelable(false)
 	                    							.setView(addrowsv)
-	                    							.setPositiveButton("Add", 
+	                    							.setPositiveButton(getString(R.string.add),
 	                          							new DialogInterface.OnClickListener() {
 	                          							// after entering values if user clicks on add we take the values and run a insert query
 	                  								public void onClick(DialogInterface dialog, int which) {
@@ -834,7 +835,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
       	  crudadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
      
           crud_dropdown.setAdapter(crudadapter);
-          lcrud.setId(299);
+          //lcrud.setId(299);
           lcrud.addView(crud_dropdown,paramcrudtext);
 
           RelativeLayout.LayoutParams rlcrudparam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -886,7 +887,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 						.setTitle("values")
 						.setView(updaterowsv)
 						.setCancelable(false)
-						.setPositiveButton("Ok", 
+						.setPositiveButton(getString(R.string.ok),
   							new DialogInterface.OnClickListener() {
   							
   							//this code will be executed when user changes values of edit text or spinner and clicks on ok button	

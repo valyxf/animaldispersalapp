@@ -1,12 +1,7 @@
 package com.example.animaldispersal.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,12 +47,14 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         //fill rows
         TextView eventType = (TextView) convertView.findViewById(R.id.event_type);
-        TextView eventDateTime = (TextView) convertView.findViewById(R.id.event_date_time);
+        TextView eventDate = (TextView) convertView.findViewById(R.id.event_date);
+        TextView eventTime = (TextView) convertView.findViewById(R.id.event_time);
         TextView eventRemarks = (TextView) convertView.findViewById(R.id.event_remarks);
+
 
         final String OLD_FORMAT = "yyyy-MM-dd HH:mm:ss";
         final String NEW_FORMAT = "yyyy-MM-dd";
-        String oldDateString = event.getEventDateTime();
+        String oldDateString = event.getEventDate();
         String newDateString;
 
         try {
@@ -67,11 +64,24 @@ public class EventAdapter extends ArrayAdapter<Event> {
             ((SimpleDateFormat) formatter).applyPattern(NEW_FORMAT);
             newDateString = formatter.format(d);
         }catch (Exception e){
-            newDateString =  event.getEventDateTime();
+            newDateString =  event.getEventDate();
         }
 
         eventType.setText(event.getEventType());
-        eventDateTime.setText(newDateString);
+        eventDate.setText(newDateString);
+
+        String newTimeString;
+        try {
+
+            SimpleDateFormat timeFormat = new SimpleDateFormat("H:mm");
+            Date d = timeFormat.parse(event.getEventTime());
+            ((SimpleDateFormat) timeFormat).applyPattern("h:mm aa");
+            newTimeString = timeFormat.format(d);
+        }catch (Exception e){
+            newTimeString =  event.getEventTime();
+        }
+
+        eventTime.setText(newTimeString);
         eventRemarks.setText(event.getEventRemarks());
         // Return the completed view to render on screen
         return convertView;

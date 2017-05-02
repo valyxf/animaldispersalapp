@@ -9,14 +9,18 @@
     <string name="discard_label">CANCEL</string>
     <string name="ndefWriteFailed">Write tag failed: %s. Please try again.</string>
     <string name="ndefWriteSuccess">Write tag successful.</string>
-    <string name="nfcAvailableDisabled">NFC is disabled</string>
-    <string name="nfcAvailableEnabled">NFC is enabled. Ready to scan.</string>
+    <string name="nfcAvailableDisabled">Turn On NFC</string>
+    <string name="nfcOff">NFC Off</string>
+    <string name="nfcAvailableEnabled">Ready to Scan</string>
+    <string name="nfcOn">NFC On</string>
+    <string name="nfcNotAvailable">NFC Not Available</string>
+    <string name="noNfcMessage">NFC is not supported on this device.</string>
+
     <string name="nfcFailAnimalIDCheck">Write tag failed: Animal ID not the same as previously scanned.</string>
     <string name="nfcSettingDisabled">NFC disabled in settings.</string>
     <string name="nfcSettingEnabled">NFC enabled in settings.</string>
     <string name="nfc_not_ready">NFC OFF. Turn on NFC and Tap this Button to Refresh.</string>
     <string name="nfc_ready">Ready to scan</string>
-    <string name="noNfcMessage">NFC is not supported on this device.</string>
     <string name="readEmptyMessage">There were no NDEF messages in the tag.</string>
     <string name="readMultipleRecordNDEFMessage">There are multiple than NDEF messages.</string>
     <string name="readNonNDEFMessage">Invalid NDEF message.</string>
@@ -76,12 +80,10 @@
     <string name="role">Role</string>
     <string name="sale_price">Sale Price</string>
     <string name="save">SAVE</string>
-    <string name="supervisor">Supervisor</string>
     <string name="sync_records">Sync Records</string>
     <string name="telephone">Telephone</string>
-    <string name="type">Type</string>
     <string name="user_name">User Name</string>
-    <string name="welcome">Welcome!</string>
+    <string name="welcome">WELCOME!</string>
     <!--Message (Toast)-->
     <string name="fill_in_mandatory_fields">Please fill in the mandatory fields</string>
     <string name="invalid_country">The country entered is not valid</string>
@@ -90,7 +92,7 @@
     <string name="nfc_tag_no_animal_id">NFC tag scanned has no valid Animal ID.</string>
     <string name="nfc_tag_no_country">NFC tag scanned has no valid country.</string>
     <string name="nfc_tag_no_access">You do not have access to this tag.</string>
-    <string name="nfc_tag_no_supervisor">NFC tag scanned has no valid supervisor.</string>
+    <string name="nfc_tag_no_supervisor">NFC tag scanned has no valid dispersal IC.</string>
     <string name="nfc_tag_not_synced">Tag data not synced.</string>
     <string name="fill_user_country_role">User Name, Country and Role must be filled.</string>
     <string name="fill_key_for_manager">You must enter a key for country manager or international manager.</string>
@@ -99,5 +101,36 @@
     <string name="leave_despite_not_save">You have not saved this animal record. Do you want to leave?</string>
     <string name="yes">Yes</string>
     <string name="back">Back</string>
+    <string name="device_data_sync_message">Device Data Upload in progress.....</string>
+    <string name="server_download_sync_message">Server Data Download in progress.....</string>
+    <string name="heading_new_animal_registration">NEW ANIMAL REGISTRATION</string>
+    <string name="heading_animal_record">ANIMAL RECORD</string>
+    <string name="error">Error</string>
+    <string name="error_duplicate_animal_id">Duplicate Animal ID found.</string>
+    <string name="ok">OK</string>
+    <string name="heading_event_details">Event Details</string>
+    <string name="heading_new_event_record">New Event Record</string>
+    <string name="heading_no_internet">No Internet Connection</string>
+    <string name="alert_record_saved">Animal Record has been saved.</string>
+    <string name="alert_rescan_tag">Rescan Tag To Confirm Animal Registration</string>
+    <string name="alert_internet_connection_for_registration">You need to be connected to the internet to register the user.</string>
+    <string name="alert_user_registered">New user has been successfully registered.</string>
+    <string name="btn_register_animal">REGISTER NEW ANIMAL</string>
+    <string name="update_record_not_synced">Info: This record has not been synced. You may update open fields.</string>
+    <string name="update_record_synced">Info: This record has been synced. You may only update the fields in blue.</string>
+    <string name="view_record_not_synced">Info: This record has not been synced.</string>
+    <string name="info_record_synced">Info: This record has been synced.</string>
+    <string name="info_record_fully_filled">Info: This record has been synced. It is a fully filled record so it cannot be edited.</string>
+    <string name="internet_on">Internet On – Ready to Sync</string>
+    <string name="internet_off">Internet Off – Not Ready to Sync</string>
+    <string name="num_records_not_synced">%1$d record(s) have not been synced</string>
+    <string name="all_records_synced">All records are synced</string>
+    <string name="add_an_event">Add An Event</string>
+    <string name="search_results">Search Results</string>
+    <string name="add_an_animal">Add An Animal</string>
+    <string name="settings">Settings</string>
+    <string name="sync_upload_error">Error uploading the data. Please try again.</string>
+    <string name="sync_status_on">Sync Now</string>
+    <string name="sync_status_off">Sync Unavailable</string>
 </resources>
 

@@ -27,6 +27,8 @@ public class ServerCaretakerTable {
     public static final String COLUMN_CREATE_TIMESTAMP="CREATE_TIMESTAMP";
     public static final String COLUMN_SYNC="SYNC";
     public static final String COLUMN_SYNC_MESSAGE="SYNC_MESSAGE";
+    public static final String COLUMN_NFC_SCAN_ENTRY_TIMESTAMP="NFC_SCAN_ENTRY_TIMESTAMP";
+    public static final String COLUMN_NFC_SCAN_SAVE_TIMESTAMP="NFC_SCAN_SAVE_TIMESTAMP";
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_SERVER_CARETAKER
@@ -48,7 +50,9 @@ public class ServerCaretakerTable {
             +   COLUMN_DELETE_USER + " text, "
             +   COLUMN_DELETE_TIMESTAMP + " text, "
             +   COLUMN_CREATE_USER + " text, "
-            +   COLUMN_CREATE_TIMESTAMP + " text "
+            +   COLUMN_CREATE_TIMESTAMP + " text, "
+            +   COLUMN_NFC_SCAN_ENTRY_TIMESTAMP + " text, "
+            +   COLUMN_NFC_SCAN_SAVE_TIMESTAMP + " text "
             + ");";
 
     public ServerCaretakerTable(Context context) {

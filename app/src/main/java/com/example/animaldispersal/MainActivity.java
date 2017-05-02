@@ -1,38 +1,33 @@
 package com.example.animaldispersal;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.nfc.NfcAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.appcompat.BuildConfig;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.animaldispersal.localdb.LocalDBHelper;
 import com.example.animaldispersal.nfc.NfcReadActivity;
-import com.example.animaldispersal.remotelogger.RemoteLogger;
+import com.example.animaldispersal.utils.NetworkStateChangeReceiver;
+import static com.example.animaldispersal.utils.NetworkStateChangeReceiver.IS_NETWORK_AVAILABLE;
 import com.example.davaodemo.R;
 import com.example.animaldispersal.http.SyncHelper;
-import com.example.animaldispersal.localdb.AnimalTable;
 
 import org.json.JSONArray;
 
@@ -42,19 +37,26 @@ import org.ndeftools.Record;
 import org.ndeftools.externaltype.ExternalTypeRecord;
 import org.ndeftools.wellknown.TextRecord;
 
-import java.io.File;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class MainActivity extends NfcReadActivity {
 
     private String country;
     private String supervisor;
+    private String nfcHeaderMessage;
     private String nfcMessage;
 
     private static final int STATIC_INTEGER_VALUE = 1;
 
+    private int colorPrimary;
+    private int colorRed;
+
+    private BroadcastReceiver onlineStateChangeBroadcastReceiver;
+
     //private ListView animalView;
-    private TextView internet;
+    private TextView syncStatus;
+    private TextView syncStatusMessage;
     private TextView countRecordsToSync;
     private Button syncButton;
     private Button refreshNFCButton;
@@ -82,8 +84,13 @@ public class MainActivity extends NfcReadActivity {
     private static final String TAG = MainActivity.class.getName();
     protected Message message;
 
-    private TextView mTextView;
+    private TextView nfcHeaderMessageTextView;
+    private TextView nfcMessageTextView;
+    private int nfcStatus;
     private NfcAdapter mNfcAdapter;
+
+    private LinearLayout searchLinearLayout;
+    private LinearLayout syncLinearLayout;
 
     private LocalDBHelper localDBHelper;
 
@@ -91,6 +98,9 @@ public class MainActivity extends NfcReadActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        colorPrimary = ContextCompat.getColor(this, R.color.colorPrimary);
+        colorRed = ContextCompat.getColor(this, R.color.red);
 
         // lets start detecting NDEF message using foreground mode
         setDetecting(true);
@@ -124,8 +134,11 @@ public class MainActivity extends NfcReadActivity {
         });
         */
 
+        //init sync
+        syncStatus = (TextView)findViewById(R.id.syncStatus);
+        syncStatusMessage = (TextView)findViewById(R.id.syncStatusMessage);
+        //setupConnectionCheck();
 
-        //init upload
         syncButton = (Button)findViewById(R.id.sync_button);
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,21 +151,58 @@ public class MainActivity extends NfcReadActivity {
                 }
                 else{
                     toast(getString(R.string.internet_connection_lost));
-                    setupConnectionCheck();
+                    //setupConnectionCheck();
                 }
 
                 fillData();
             }
         });
 
-        //init internet connection
-        internet = (TextView)findViewById(R.id.internet);
-        setupConnectionCheck();
+        syncLinearLayout = (LinearLayout)findViewById(R.id.syncLinearLayout);
+        syncLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    syncButton.performClick();
+            }
+        });
 
-        mTextView = (TextView) findViewById(R.id.nfc_text);
-        mTextView.setText(nfcMessage);
-        /*
+        IntentFilter intentFilter = new IntentFilter(NetworkStateChangeReceiver.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isNetworkAvailable = intent.getBooleanExtra(IS_NETWORK_AVAILABLE, false);
+                if (isNetworkAvailable) {
+                    syncStatus.setText(R.string.sync_status_on);
+                    syncStatus.setTextColor(colorPrimary);
+                    syncStatusMessage.setText(R.string.internet_on);
+                    syncLinearLayout.setEnabled(true);
+
+                }
+                else{
+                    syncStatus.setText(R.string.sync_status_off);
+                    syncStatus.setTextColor(colorRed);
+                    syncStatusMessage.setText(R.string.internet_off);
+                    syncLinearLayout.setEnabled(false);
+                }
+
+
+            }
+        }, intentFilter);
+
         //init nfc
+
+        //nfcHeaderMessageTextView = (TextView) findViewById(R.id.nfc_text);
+        nfcHeaderMessageTextView = (TextView) findViewById(R.id.nfc_header);
+        nfcHeaderMessageTextView.setText(nfcHeaderMessage);
+
+        int color = (nfcStatus==0)?colorRed:colorPrimary;
+        nfcHeaderMessageTextView.setTextColor(color);
+
+        nfcMessageTextView = (TextView) findViewById(R.id.nfc_text2);
+        nfcMessageTextView.setText(nfcMessage);
+
+        /*
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -174,6 +224,17 @@ public class MainActivity extends NfcReadActivity {
             public void onClick(View v) {
                 refreshNFC();            }
         });
+
+        //init search
+        searchLinearLayout = (LinearLayout)findViewById(R.id.searchLinearLayout);
+        searchLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent is = new Intent(getApplicationContext(),SearchActivity.class);
+                is.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(is);
+            }
+        });
     }
 
     @Override
@@ -186,7 +247,7 @@ public class MainActivity extends NfcReadActivity {
         supervisor = mPrefs.getString("username","");
 
         //check Internet Connection
-        setupConnectionCheck();
+        //setupConnectionCheck();
 
         //fill ListView
         fillData();
@@ -198,7 +259,9 @@ public class MainActivity extends NfcReadActivity {
 
         countRecordsToSync = (TextView)findViewById(R.id.syncRecordCount);
         int count = localDBHelper.getCountUnsyncRecords();
-        countRecordsToSync.setText(String.valueOf(count)+" record(s) have not been synced");
+        if (count > 0)
+            countRecordsToSync.setText(getString(R.string.num_records_not_synced, count));
+        else countRecordsToSync.setText(getString(R.string.all_records_synced));
     }
 
     @Override
@@ -217,17 +280,18 @@ public class MainActivity extends NfcReadActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
 
-        /*
+
+        /* TODO REMOVE WHEN LIVE*/
+        //return super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.tag_lock);
         if (AppController.getInstance().isTagLock()){
             item.setTitle("Turn off Tag Lock");
         }
         else item.setTitle("Turn on Tag Lock");
 
-        return true;
-        */
+        return super.onPrepareOptionsMenu(menu);
+
 
 
     }
@@ -240,15 +304,19 @@ public class MainActivity extends NfcReadActivity {
                 startActivity(i);
                 break;
                 */
-            case R.id.search_icon:
-                onSearchRequested();
+            /*case R.id.search_icon:
+                Intent is = new Intent(getApplicationContext(),SearchActivity.class);
+                is.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(is);
+                //onSearchRequested();
                 break;
+                */
             case R.id.settings:
                 Intent i = new Intent(getApplicationContext(),SettingsActivity.class);
                 startActivity(i);
-                finish();
+                //finish();
                 break;
-            /*
+            /* TODO REMOVE WHEN LIVE*/
             case R.id.tag_lock:
                 if(AppController.getInstance().isTagLock()) {
                     AppController.getInstance().setTagLock(false);
@@ -260,7 +328,7 @@ public class MainActivity extends NfcReadActivity {
                     item.setTitle("Turn off Tag Lock");
                 }
                 break;
-            */
+
             /*case R.id.db:
                 Intent dbmanager = new Intent(getApplicationContext(),AndroidDatabaseManager.class);
                 startActivity(dbmanager);
@@ -273,7 +341,7 @@ public class MainActivity extends NfcReadActivity {
     }
 
 
-    //TODO TO BE REMOVED WHEN LIVE
+    //ANIMAL LISTVIEW ON MAIN ACTIVITY
     //Populate List with Device Records
     private void fillData(){
         /*
@@ -321,14 +389,14 @@ public class MainActivity extends NfcReadActivity {
                             startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
                         }
                     }).create().show();
-            //mTextView.setText(R.string.nfc_not_ready);
+            //nfcHeaderMessageTextView.setText(R.string.nfc_not_ready);
         } else {
-            mTextView.setText(R.string.nfc_ready);
+            nfcHeaderMessageTextView.setText(R.string.nfc_ready);
         }*/
     }
 
 
-    private void startAnimalDetailActivity(String tagAnimalId, String tagSupervisor, String tagCountry){
+    private void  startAnimalDetailActivity(String tagAnimalId, String tagSupervisor, String tagCountry){
         Log.d(TAG,"AnimalId read from NFC tag: "+tagAnimalId);
 
         if (tagAnimalId == null){
@@ -387,6 +455,11 @@ public class MainActivity extends NfcReadActivity {
 
         Bundle dataBundle = new Bundle();
         dataBundle.putString("SELECTED_ANIMAL_ID", tagAnimalId);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        dataBundle.putString("NFC_SCAN_ENTRY_TIMESTAMP", dateFormatter.format(cal.getTime()));
+
         Intent intent = new Intent(getApplicationContext(),AnimalDetailActivity.class);
         intent.putExtras(dataBundle);
         startActivity(intent);
@@ -413,17 +486,24 @@ public class MainActivity extends NfcReadActivity {
 
     }
 
+    /* REDUNDANT - UPGRADED TO USE BROADCAST RECEIVER
     private void setupConnectionCheck(){
         if (isOnline()) {
-            internet.setText("Internet On – Ready to Sync");
-            syncButton.setEnabled(true);
+            syncStatus.setText(R.string.sync_status_on);
+            syncStatus.setTextColor(colorPrimary);
+            syncStatusMessage.setText(R.string.internet_on);
+
+            //syncButton.setEnabled(true);
         }
         else
         {
-            internet.setText("Internet Off – Not Ready to Sync");
-            syncButton.setEnabled(false);
+            syncStatus.setText(R.string.sync_status_off);
+            syncStatus.setTextColor(colorRed);
+            syncStatusMessage.setText(R.string.internet_off);
+            //syncButton.setEnabled(false);
         }
     }
+     */
 
     private boolean isOnline(){
         ConnectivityManager cm =
@@ -533,7 +613,10 @@ public class MainActivity extends NfcReadActivity {
 
     @Override
     protected void onNfcStateEnabled() {
-        nfcMessage = getString(R.string.nfcAvailableEnabled);
+        nfcHeaderMessage = getString(R.string.nfcAvailableEnabled);
+        nfcMessage = getString(R.string.nfcOn);
+
+        nfcStatus = 1;
     }
 
     /**
@@ -544,7 +627,10 @@ public class MainActivity extends NfcReadActivity {
 
     @Override
     protected void onNfcStateDisabled() {
-        nfcMessage = getString(R.string.nfcAvailableDisabled);
+        nfcHeaderMessage = getString(R.string.nfcAvailableDisabled);
+        nfcMessage = getString(R.string.nfcOff);
+
+        nfcStatus = 0;
     }
 
     /**
@@ -555,14 +641,19 @@ public class MainActivity extends NfcReadActivity {
 
     @Override
     protected void onNfcStateChange(boolean enabled) {
-        if (mTextView != null){
+        if (nfcHeaderMessageTextView != null){
             if(enabled) {
-                nfcMessage = getString(R.string.nfcAvailableEnabled);
+                nfcHeaderMessage = getString(R.string.nfcAvailableEnabled);
+                nfcMessage = getString(R.string.nfcOn);
+                nfcHeaderMessageTextView.setTextColor(colorPrimary);
 
             } else {
-                nfcMessage = getString(R.string.nfcAvailableDisabled);
+                nfcHeaderMessage = getString(R.string.nfcAvailableDisabled);
+                nfcMessage = getString(R.string.nfcOff);
+                nfcHeaderMessageTextView.setTextColor(colorRed);
             }
-            mTextView.setText(nfcMessage);
+            nfcHeaderMessageTextView.setText(nfcHeaderMessage);
+            nfcMessageTextView.setText(nfcMessage);
         }
     }
 
@@ -574,7 +665,10 @@ public class MainActivity extends NfcReadActivity {
 
     @Override
     protected void onNfcFeatureNotFound() {
+        nfcHeaderMessage = getString(R.string.nfcNotAvailable);
         nfcMessage = getString(R.string.noNfcMessage);
+
+        nfcStatus = 0;
     }
 
 

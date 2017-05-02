@@ -1,22 +1,25 @@
 package com.example.animaldispersal;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.davaodemo.R;
@@ -31,8 +34,9 @@ public class EventDetailActivity extends AppCompatActivity {
     private static final String TAG = EventDetailActivity.class.getName();
 
     private EditText mEventType;
-    private EditText mEventDateTime;
+    private EditText mEventDate;
     private EditText mEventRemarks;
+    private EditText mEventTime;
 
     private Button mDoneButton;
     private Button mCancelButton;
@@ -46,17 +50,20 @@ public class EventDetailActivity extends AppCompatActivity {
     //private ViewUtils vu;
     private String animalId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
         mEventType = (EditText)findViewById(R.id.event_type);
-        mEventDateTime = (EditText)findViewById(R.id.event_date_time);
+        mEventDate = (EditText)findViewById(R.id.event_date);
+        mEventTime = (EditText)findViewById(R.id.event_time);
         mEventRemarks = (EditText)findViewById(R.id.event_remarks);
 
         mDoneButton = (Button)findViewById(R.id.button8);
         mCancelButton = (Button)findViewById(R.id.button9);
+
 
         //initialise the variables
         Bundle extras = getIntent().getExtras();
@@ -65,11 +72,14 @@ public class EventDetailActivity extends AppCompatActivity {
             selectedEvent = (Event)extras.getParcelable("SELECTED_EVENT");
             eventSno = extras.getString("EVENT_ID");
             //editMode = extras.getBoolean("EDIT_MODE");
-            mode = extras.getString("MODE");
+
+            //VY 12MAR17 not going to use mode to determine layout of items anymore. Only going to use recordType.
+            //S - disabled, not S - enabled
+            //mode = extras.getString("MODE");
 
             //EXISTING EVENT
             if (selectedEvent!= null){
-                setTitle("Event Details");
+                setTitle(getString(R.string.heading_event_details));
                 if ("S".equals(selectedEvent.getRecordType()) ||
                         "US".equals(selectedEvent.getRecordType()))
                     eventRecordType = "US";
@@ -82,7 +92,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
             //NEW EVENT
             else{
-                setTitle("New Event Record");
+                setTitle(getString(R.string.heading_new_event_record));
                 eventRecordType = "N";
             }
         }
@@ -93,14 +103,26 @@ public class EventDetailActivity extends AppCompatActivity {
         //initialise the buttons
         final Calendar cal = Calendar.getInstance();
 
-        mEventDateTime.setOnClickListener(new View.OnClickListener() {
+        mEventDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 DatePickerDialog dialog = new DatePickerDialog(v.getContext(), datePickerListener,
-                        cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1,cal.get(Calendar.DATE));
+                        cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),cal.get(Calendar.DATE));
                 DatePicker picker = dialog.getDatePicker();
-                picker.setId(mEventDateTime.getId());
+                picker.setId(mEventDate.getId());
+                dialog.show();
+            }
+        });
+
+        mEventTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog dialog
+                        = new TimePickerDialog(v.getContext(), AlertDialog.THEME_HOLO_LIGHT,
+                        timePickerListener,
+                        cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),false);
+
                 dialog.show();
             }
         });
@@ -111,9 +133,10 @@ public class EventDetailActivity extends AppCompatActivity {
             public void onClick(View v){
 
                 if (TextUtils.isEmpty(mEventType.getText().toString()) ||
-                        TextUtils.isEmpty(mEventDateTime.getText().toString()))
+                        TextUtils.isEmpty(mEventTime.getText().toString()) ||
+                        TextUtils.isEmpty(mEventDate.getText().toString()))
                 {
-                    Toast.makeText(getApplicationContext(), "Event Type, Event Date must be filled", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Event Type, Date and Time must be filled", Toast.LENGTH_LONG).show();
 
                 }
                 else
@@ -122,7 +145,8 @@ public class EventDetailActivity extends AppCompatActivity {
                     Event newEvent = new Event(
                             eventSno,
                             getText(mEventType),
-                            getText(mEventDateTime),
+                            getText(mEventDate),
+                            getText(mEventTime),
                             getText(mEventRemarks)
                     );
                     if (!newEvent.equals(selectedEvent)){
@@ -144,7 +168,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         Event newEvent = new Event();
                         newEvent.setEventId(eventSno);
                         newEvent.setEventType(mEventType.getText().toString());
-                        newEvent.setEventDateTime(mEventDateTime.getText().toString());
+                        newEvent.setEventDateTime(mEventDate.getText().toString());
                         newEvent.setEventRemarks(mEventRemarks.getText().toString());
 
                         if ("N".equals(eventRecordType)) newEvent.setRecordType("D");
@@ -153,6 +177,9 @@ public class EventDetailActivity extends AppCompatActivity {
 
                         resultIntent.putExtra("EVENT", newEvent);
                     }*/
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mDoneButton.getWindowToken(), 0);
+
                     finish();
                 }
             }
@@ -204,25 +231,58 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     };
 
+
+    private TimePickerDialog.OnTimeSetListener timePickerListener
+            = new TimePickerDialog.OnTimeSetListener() {
+
+        @Override
+        public void onTimeSet(TimePicker view, int selectedHour,
+                              int selectedMinute) {
+
+            final String OLD_FORMAT = "H:mm";
+            final String NEW_FORMAT = "HH:mm:ss";
+            String newTimeString;
+            String timeString = String.valueOf(selectedHour) + ":"+
+                    String.valueOf(selectedMinute) +":00";
+
+            try {
+                SimpleDateFormat formatter = new SimpleDateFormat(OLD_FORMAT);
+                Date d = formatter.parse(timeString);
+                ((SimpleDateFormat) formatter).applyPattern(NEW_FORMAT);
+                newTimeString = formatter.format(d);
+            }catch (Exception e){
+                newTimeString =  timeString;
+            }
+
+            mEventTime.setText(newTimeString);
+        }
+    };
+
     private void fillData(Event event){
 
+        /*
         final String OLD_FORMAT = "yyyy-MM-dd HH:mm:ss";
         final String NEW_FORMAT = "yyyy-MM-dd";
-        String oldDateString = event.getEventDateTime();
+        String oldDateString = event.getEventDate();
         String newDateString;
+
 
         try {
 
-            SimpleDateFormat formatter = new SimpleDateFormat(OLD_FORMAT);
-            Date d = formatter.parse(oldDateString);
-            ((SimpleDateFormat) formatter).applyPattern(NEW_FORMAT);
-            newDateString = formatter.format(d);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat(OLD_FORMAT);
+            Date d = dateFormatter.parse(oldDateString);
+            ((SimpleDateFormat) dateFormatter).applyPattern(NEW_FORMAT);
+            newDateString = dateFormatter.format(d);
         }catch (Exception e){
-            newDateString =  event.getEventDateTime();
+            newDateString =  event.getEventDate();
         }
 
+        */
+
+
         mEventType.setText(event.getEventType());
-        mEventDateTime.setText(newDateString);
+        mEventDate.setText(event.getEventDate());
+        mEventTime.setText(event.getEventTime());
         mEventRemarks.setText(event.getEventRemarks());
 
         refreshButtons();
@@ -230,15 +290,22 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void refreshButtons(){
         //if ("S".equals(eventRecordType)|| !editMode) {
-        if ("V".equals(mode)) {
+
+        //VY 12MAR17 not going to use mode to determine layout of items anymore. Only going to use recordType.
+        //S - disabled, not S - enabled
+        //if ("V".equals(mode)) {
+        if ("S".equals(eventRecordType)){
             mEventType.setEnabled(false);
-            mEventDateTime.setEnabled(false);
+            mEventDate.setEnabled(false);
+            mEventTime.setEnabled(false);
             mEventRemarks.setEnabled(false);
             mDoneButton.setEnabled(false);
     }
         else
             mDoneButton.setEnabled(true);
     }
+
+
 
     private boolean onEventChange(){
         if (selectedEvent!=null) {
@@ -247,10 +314,10 @@ public class EventDetailActivity extends AppCompatActivity {
             if ((selectedEvent.getEventType() != null) &&
                     (!(selectedEvent.getEventType().equals(mEventType.getText().toString().trim()))))
                 return true;
-            if ((selectedEvent.getEventDateTime() == null) && (mEventDateTime.getText().toString().trim() != null))
+            if ((selectedEvent.getEventDate() == null) && (mEventDate.getText().toString().trim() != null))
                 return true;
-            if ((selectedEvent.getEventDateTime() != null) &&
-                    (!(selectedEvent.getEventDateTime().equals(mEventDateTime.getText().toString().trim()))))
+            if ((selectedEvent.getEventDate() != null) &&
+                    (!(selectedEvent.getEventDate().equals(mEventDate.getText().toString().trim()))))
                 return true;
             if ((selectedEvent.getEventRemarks() == null) && (mEventRemarks.getText().toString().trim() != null))
                 return true;
@@ -267,13 +334,6 @@ public class EventDetailActivity extends AppCompatActivity {
         if (textView == null) return null;
         if (!TextUtils.isEmpty(textView.getText().toString().trim()))
             return textView.getText().toString().trim();
-        else return null;
-    }
-
-    private String getText(RadioButton radioButton){
-        if (radioButton == null) return null;
-        if (!TextUtils.isEmpty(radioButton.getText().toString().trim()))
-            return radioButton.getText().toString().trim();
         else return null;
     }
 
