@@ -1,13 +1,26 @@
 <resources>
     <string-array name="country_titles">
         <item></item>
-        <item>Bangladesh</item>
-        <item>Pakistan</item>
-        <item>Philippines</item>
+        <item>@string/country_bangla</item>
+        <item>@string/country_pakistan</item>
+        <item>@string/country_philippines</item>
     </string-array>
     <string-array name="user_roles">
-        <item>Dispersal IC</item>
-        <item>Country Manager</item>
-        <item>International Manager</item>
+        <item>@string/dispersal_ic</item>
+        <item>@string/role_cm</item>
+        <item>@string/role_im</item>
+    </string-array>
+    <string-array name="languages">
+        <item>@string/lang_eng</item>
+        <item>@string/lang_bangla</item>
+        <item>@string/lang_urdu</item>
+    </string-array>
+    <string-array name="weight_units">
+        <item>kg</item>
+        <item>lb</item>
+    </string-array>
+    <string-array name="height_units">
+        <item>m</item>
+        <item>ft</item>
     </string-array>
 </resources>

@@ -13,8 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="70"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:weightSum="3"
 
         >
@@ -43,13 +41,15 @@
                 android:layout_height="wrap_content"
                 style="@style/MainMenuSectionHeader"
                 android:text="@string/nfcAvailableEnabled"
-                android:id="@+id/nfc_header" />
+                android:id="@+id/nfc_header"
+                android:textAlignment="center"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/MainMenuSectionMessage"
                 android:text="@string/nfcOn"
-                android:id="@+id/nfc_text2" />
+                android:id="@+id/nfc_text2"
+                android:textAlignment="center"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/records_to_be_synced_heading"
+                android:text="@string/num_records_not_synced"
                 android:id="@+id/syncRecordCount"
                 style="@style/MainMenuSectionMessage"/>
             <Button
@@ -121,7 +121,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search_hint"
             style="@style/MainMenuSectionHeader"
             android:id="@+id/textView7"
             android:drawableLeft="@mipmap/ic_search"/>

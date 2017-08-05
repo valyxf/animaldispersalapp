@@ -2,16 +2,12 @@ package com.example.animaldispersal.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
-import com.example.animaldispersal.dataobject.Event;
 import com.example.davaodemo.R;
-
-import java.util.List;
 
 /**
  * Created by user on 15/6/2016.

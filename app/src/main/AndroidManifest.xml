@@ -17,6 +17,7 @@
         android:anyDensity="true"
         />
 
+    <!--TODO label TO BE CHANGED FOR RELEASE-->
     <application
         android:name="com.example.animaldispersal.AppController"
         android:allowBackup="true"
@@ -72,7 +73,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name="com.example.animaldispersal.AndroidDatabaseManager" />
         <activity android:name="com.example.animaldispersal.RegisterActivity" />
         <activity android:name="com.example.animaldispersal.SettingsActivity" />
     </application>

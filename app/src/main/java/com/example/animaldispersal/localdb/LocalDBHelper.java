@@ -35,13 +35,14 @@ public class LocalDBHelper extends SQLiteOpenHelper {
     private static LocalDBHelper sInstance;
     private static String country;
     private static String username;
+    private static SharedPreferences mPrefs;
 
     private static final String DATABASE_NAME = "database.db";
     private static final int DATABASE_VERSION = 1;
 
     public static synchronized LocalDBHelper getInstance(Context context) {
 
-        SharedPreferences mPrefs = context.getSharedPreferences("animalDispersalPrefs", Context.MODE_PRIVATE);
+        mPrefs = context.getSharedPreferences("animalDispersalPrefs", Context.MODE_PRIVATE);
         //country = mPrefs.getString("country","");
         username = mPrefs.getString ("username","SYSTEM");
         // Use the application context, which will ensure that you
@@ -68,8 +69,39 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         CaretakerTable.onCreate(database);
         ServerCaretakerTable.onCreate(database);
         SystemPropertiesTable.onCreate(database);
+        GenderTable.onCreate(database);
+        CountryTable.onCreate(database);
+        AnimalTypeTable.onCreate(database);
+
         insertSystemProperty(database, "LAST_SYNC_TIMESTAMP","");
         insertSystemProperty(database, "LAST_SYNC_MESSAGE","");
+
+        insertGender(database, "0","Male","en");
+        insertGender(database, "1","Female","en");
+        insertGender(database, "0","এঁড়ে","bn");
+        insertGender(database, "1","মাদী","bn");
+        insertGender(database, "0","نر","ur");
+        insertGender(database, "1","مادہ","ur");
+
+        insertCountry(database, "1","Bangladesh","en");
+        insertCountry(database, "2","Pakistan","en");
+        insertCountry(database, "3","Philippines","en");
+        insertCountry(database, "1","বাংলাদেশ","bn");
+        insertCountry(database, "2","পাকিস্তান","bn");
+        insertCountry(database, "3","ফিলিপাইন","bn");
+        insertCountry(database, "1","بنگلا دیش","ur");
+        insertCountry(database, "2","پاکستان","ur");
+        insertCountry(database, "3","فلپائن","ur");
+
+        insertAnimalType(database, "0","Cow","en");
+        insertAnimalType(database, "1","Goat","en");
+        insertAnimalType(database, "2","Pig","en");
+        insertAnimalType(database, "0","গরু","bn");
+        insertAnimalType(database, "1","ছাগল","bn");
+        insertAnimalType(database, "2","শুকর","bn");
+        insertAnimalType(database, "0","گائے","ur");
+        insertAnimalType(database, "1","بکری","ur");
+        insertAnimalType(database, "2","خنزیر","ur");
     }
 
     // Method is called during an upgrade of the database,
@@ -101,8 +133,16 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("DATE_PURCHASED", animal.getDatePurchased());
         contentValues.put("PURCHASE_PRICE", animal.getPurchasePrice());
         contentValues.put("DATE_DISTRIBUTED", animal.getDateDistributed());
+        contentValues.put("PURCHASE_WEIGHT", animal.getPurchaseWeight());
+        contentValues.put("PURCHASE_WEIGHT_UNIT", animal.getPurchaseWeightUnit());
+        contentValues.put("PURCHASE_HEIGHT", animal.getPurchaseHeight());
+        contentValues.put("PURCHASE_HEIGHT_UNIT", animal.getPurchaseHeightUnit());
         contentValues.put("DATE_SOLD", animal.getDateSold());
         contentValues.put("SALE_PRICE", animal.getSalePrice());
+        contentValues.put("SALE_WEIGHT", animal.getSaleWeight());
+        contentValues.put("SALE_WEIGHT_UNIT", animal.getSaleWeightUnit());
+        contentValues.put("SALE_HEIGHT", animal.getSaleHeight());
+        contentValues.put("SALE_HEIGHT_UNIT", animal.getSaleHeightUnit());
         contentValues.put("RECORD_TYPE", animal.getRecordType());
         contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", animal.getNfcScanEntryTimestamp());
         contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", animal.getNfcScanSaveTimestamp());
@@ -225,9 +265,17 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("COUNTRY", queryvalues.get("COUNTRY"));
         contentValues.put("DATE_PURCHASED", queryvalues.get("DATE_PURCHASED"));
         contentValues.put("PURCHASE_PRICE", queryvalues.get("PURCHASE_PRICE"));
+        contentValues.put("PURCHASE_WEIGHT", queryvalues.get("PURCHASE_WEIGHT"));
+        contentValues.put("PURCHASE_WEIGHT_UNIT", queryvalues.get("PURCHASE_WEIGHT_UNIT"));
+        contentValues.put("PURCHASE_HEIGHT", queryvalues.get("PURCHASE_HEIGHT"));
+        contentValues.put("PURCHASE_HEIGHT_UNIT", queryvalues.get("PURCHASE_HEIGHT_UNIT"));
         contentValues.put("DATE_DISTRIBUTED", queryvalues.get("DATE_DISTRIBUTED"));
         contentValues.put("DATE_SOLD", queryvalues.get("DATE_SOLD"));
         contentValues.put("SALE_PRICE", queryvalues.get("SALE_PRICE"));
+        contentValues.put("SALE_WEIGHT", queryvalues.get("SALE_WEIGHT"));
+        contentValues.put("SALE_WEIGHT_UNIT", queryvalues.get("SALE_WEIGHT_UNIT"));
+        contentValues.put("SALE_HEIGHT", queryvalues.get("SALE_HEIGHT"));
+        contentValues.put("SALE_HEIGHT_UNIT", queryvalues.get("SALE_HEIGHT_UNIT"));
         contentValues.put("NFC_SCAN_ENTRY_TIMESTAMP", queryvalues.get("NFC_SCAN_ENTRY_TIMESTAMP"));
         contentValues.put("NFC_SCAN_SAVE_TIMESTAMP", queryvalues.get("NFC_SCAN_SAVE_TIMESTAMP"));
         contentValues.put("CREATE_USER", queryvalues.get("CREATE_USER"));
@@ -314,6 +362,64 @@ public class LocalDBHelper extends SQLiteOpenHelper {
 
         return true;
     }
+
+    public boolean insertGender(SQLiteDatabase database, String genderCode, String gender, String locale) {
+
+        ContentValues genderContentValues = new ContentValues();
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        genderContentValues.put("ACTIVE_FLAG", "A");
+        genderContentValues.put("GENDER_CODE", genderCode);
+        genderContentValues.put("GENDER", gender);
+        genderContentValues.put("LOCALE", locale);
+        genderContentValues.put("CREATE_USER", "SYSTEM");
+        genderContentValues.put("CREATE_TIMESTAMP", dateFormatter.format(cal.getTime()));
+
+        database.insert("GENDER_TABLE", null, genderContentValues);
+
+        return true;
+    }
+
+    public boolean insertCountry(SQLiteDatabase database, String countryCode, String country, String locale) {
+
+        ContentValues countryContentValues = new ContentValues();
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        countryContentValues.put("ACTIVE_FLAG", "A");
+        countryContentValues.put("COUNTRY_CODE", countryCode);
+        countryContentValues.put("COUNTRY", country);
+        countryContentValues.put("LOCALE", locale);
+        countryContentValues.put("CREATE_USER", "SYSTEM");
+        countryContentValues.put("CREATE_TIMESTAMP", dateFormatter.format(cal.getTime()));
+
+        database.insert("COUNTRY_TABLE", null, countryContentValues);
+
+        return true;
+    }
+
+    public boolean insertAnimalType(SQLiteDatabase database, String animalTypeCode, String animalType, String locale) {
+
+        ContentValues animalTypeContentValues = new ContentValues();
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        animalTypeContentValues.put("ACTIVE_FLAG", "A");
+        animalTypeContentValues.put("ANIMAL_TYPE_CODE", animalTypeCode);
+        animalTypeContentValues.put("ANIMAL_TYPE", animalType);
+        animalTypeContentValues.put("LOCALE", locale);
+        animalTypeContentValues.put("CREATE_USER", "SYSTEM");
+        animalTypeContentValues.put("CREATE_TIMESTAMP", dateFormatter.format(cal.getTime()));
+
+        database.insert("ANIMAL_TYPE_TABLE", null, animalTypeContentValues);
+
+        return true;
+    }
+
 
     public boolean insertSystemPropertyFromServer(HashMap<String, String> queryvalues) {
 
@@ -448,6 +554,9 @@ public class LocalDBHelper extends SQLiteOpenHelper {
 
         String price;
         String date;
+        String weight;
+        String height;
+
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -466,6 +575,26 @@ public class LocalDBHelper extends SQLiteOpenHelper {
 
 
                     //set float
+                    weight = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_WEIGHT"));
+                    if (weight!=null) newAnimal.setPurchaseWeight(weight);
+                    else newAnimal.setPurchaseWeight(null);
+                    newAnimal.setPurchaseWeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_WEIGHT_UNIT")));
+
+                    height = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_HEIGHT"));
+                    if (height!=null) newAnimal.setPurchaseHeight(height);
+                    else newAnimal.setPurchaseHeight(null);
+                    newAnimal.setPurchaseHeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_HEIGHT_UNIT")));
+
+                    weight = cursor.getString(cursor.getColumnIndexOrThrow("SALE_WEIGHT"));
+                    if (weight!=null) newAnimal.setSaleWeight(weight);
+                    else newAnimal.setSaleWeight(null);
+                    newAnimal.setSaleWeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("SALE_WEIGHT_UNIT")));
+
+                    height = cursor.getString(cursor.getColumnIndexOrThrow("SALE_HEIGHT"));
+                    if (height!=null) newAnimal.setSaleHeight(height);
+                    else newAnimal.setSaleHeight(null);
+                    newAnimal.setSaleHeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("SALE_HEIGHT_UNIT")));
+
                     price = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_PRICE"));
                     if (price!=null) newAnimal.setPurchasePrice(price);
                     else newAnimal.setPurchasePrice(null);
@@ -528,6 +657,8 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(ANIMAL_SELECT_QUERY, new String[]{id});
         String price;
         String date;
+        String weight;
+        String height;
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -546,6 +677,26 @@ public class LocalDBHelper extends SQLiteOpenHelper {
 
 
                     //set float
+                    weight = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_WEIGHT"));
+                    if (weight!=null) newAnimal.setPurchaseWeight(weight);
+                    else newAnimal.setPurchaseWeight(null);
+                    newAnimal.setPurchaseWeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_WEIGHT_UNIT")));
+
+                    height = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_HEIGHT"));
+                    if (height!=null) newAnimal.setPurchaseHeight(height);
+                    else newAnimal.setPurchaseHeight(null);
+                    newAnimal.setPurchaseHeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_HEIGHT_UNIT")));
+
+                    weight = cursor.getString(cursor.getColumnIndexOrThrow("SALE_WEIGHT"));
+                    if (weight!=null) newAnimal.setSaleWeight(weight);
+                    else newAnimal.setSaleWeight(null);
+                    newAnimal.setSaleWeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("SALE_WEIGHT_UNIT")));
+
+                    height = cursor.getString(cursor.getColumnIndexOrThrow("SALE_HEIGHT"));
+                    if (height!=null) newAnimal.setSaleHeight(height);
+                    else newAnimal.setSaleHeight(null);
+                    newAnimal.setSaleHeightUnit(cursor.getString(cursor.getColumnIndexOrThrow("SALE_HEIGHT_UNIT")));
+
                     price = cursor.getString(cursor.getColumnIndexOrThrow("PURCHASE_PRICE"));
                     if (price!=null) newAnimal.setPurchasePrice(price);
                     else newAnimal.setPurchasePrice("0");
@@ -797,7 +948,10 @@ public class LocalDBHelper extends SQLiteOpenHelper {
     public Cursor getSearchResult(String searchString){
 
         SQLiteDatabase db = getReadableDatabase();
+        String locale = mPrefs.getString("locale","en");
 
+        Log.d(TAG,"locale "+locale);
+        /*
         String query =
                 "SELECT  "+
                 "'' as _id,  " +
@@ -850,13 +1004,81 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                 "C.CARETAKER_NAME,  " +
                 "A.DATE_DISTRIBUTED " +
                 "ORDER BY A.ANIMAL_ID ";
-                Cursor animalCursor = db.rawQuery(query, null);
+                */
+        String query =
+                "SELECT    "+
+                "'' as _id,   "+
+                "ACE.ANIMAL_ID AS ANIMAL_ID, " +
+                "AT.ANIMAL_TYPE AS ANIMAL_TYPE, " +
+                "ACE.SUPERVISOR AS SUPERVISOR, " +
+                "ACE.CARETAKER_NAME AS CARETAKER_NAME, " +
+                "ACE.DATE_DISTRIBUTED AS DATE_DISTRIBUTED "+
+                "FROM    "+
+                "((SELECT * FROM ANIMAL_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A'    "+
+                "UNION    "+
+                "SELECT * FROM SERVER_ANIMAL_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A') AS A    "+
+                "LEFT OUTER JOIN    "+
+                "(SELECT * FROM CARETAKER_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A'    "+
+                "UNION    "+
+                "SELECT * FROM SERVER_CARETAKER_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A') AS C     "+
+                "ON A.ANIMAL_ID = C.ANIMAL_ID    "+
+                "LEFT OUTER JOIN    "+
+                "(SELECT * FROM EVENT_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A'    "+
+                "UNION    "+
+                "SELECT * FROM SERVER_EVENT_TABLE    "+
+                "WHERE ACTIVE_FLAG = 'A') AS E  " +
+                "ON A.ANIMAL_ID = E.ANIMAL_ID) " +
+                "AS ACE,  "+
+                "(SELECT * FROM GENDER_TABLE WHERE LOCALE = '"+locale+"') AS G,  "+
+                "(SELECT * FROM ANIMAL_TYPE_TABLE WHERE LOCALE = '"+locale+"') AS AT,  "+
+                "(SELECT * FROM COUNTRY_TABLE WHERE LOCALE = '"+locale+"') AS CT  "+
+                "WHERE ACE.GENDER = G.GENDER_CODE  "+
+                "AND ACE.ANIMAL_TYPE = AT.ANIMAL_TYPE_CODE  "+
+                "AND ACE.COUNTRY = CT.COUNTRY_CODE "+
+                "AND ( "+
+                "G.GENDER COLLATE NOCASE LIKE '%"+searchString+"%' OR "+
+                "AT.ANIMAL_TYPE COLLATE NOCASE LIKE '%"+searchString+"%' OR "+
+                "CT.COUNTRY COLLATE NOCASE LIKE '%"+searchString+"%' OR  "+
+                "ACE.ANIMAL_ID COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.SUPERVISOR COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.DATE_OF_BIRTH COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.DATE_PURCHASED COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.PURCHASE_PRICE COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.PURCHASE_WEIGHT COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.PURCHASE_HEIGHT COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.DATE_DISTRIBUTED COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.DATE_SOLD COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.SALE_PRICE COLLATE NOCASE like '%"+searchString+"%' OR   "+
+                "ACE.SALE_WEIGHT COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.SALE_HEIGHT COLLATE NOCASE like '%"+searchString+"%' OR      "+
+                "ACE.CARETAKER_ID COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.CARETAKER_NAME COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.CARETAKER_TEL COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.CARETAKER_ADDR_1 COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.CARETAKER_ADDR_2 COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.CARETAKER_ADDR_3 COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.EVENT_TYPE COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.EVENT_TIMESTAMP COLLATE NOCASE LIKE '%"+searchString+"%' OR   "+
+                "ACE.EVENT_REMARKS COLLATE NOCASE LIKE '%"+searchString+"%' ) "+
+                "GROUP BY    "+
+                "ACE.ANIMAL_ID,    "+
+                "AT.ANIMAL_TYPE,    "+
+                "ACE.SUPERVISOR,    "+
+                "ACE.CARETAKER_NAME,    "+
+                "ACE.DATE_DISTRIBUTED   "+
+                "ORDER BY ACE.ANIMAL_ID ";
+        //Log.d(TAG, query);
+        Cursor animalCursor = db.rawQuery(query, null);
         Log.d(TAG, "animalCursor.getCount() "+animalCursor.getCount());
         return animalCursor;
     }
 
-
-
+    /*REDUNDANT
     public Cursor getAll(){
 
         SQLiteDatabase db = getReadableDatabase();
@@ -915,6 +1137,7 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                 Cursor animalCursor = db.rawQuery(query, null);
         return animalCursor;
     }
+    */
 
     public Map getAllAnimalMap(){
 
@@ -944,9 +1167,22 @@ public class LocalDBHelper extends SQLiteOpenHelper {
                     animalJson.put("country",animalCursor.getString(animalCursor.getColumnIndexOrThrow("COUNTRY")));
                     animalJson.put("date_purchased",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_PURCHASED")));
                     animalJson.put("purchase_price",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_PRICE")));
+
+                    animalJson.put("purchase_weight",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_WEIGHT")));
+                    animalJson.put("purchase_weight_unit",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_WEIGHT_UNIT")));
+                    animalJson.put("purchase_height",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_HEIGHT")));
+                    animalJson.put("purchase_height_unit",animalCursor.getString(animalCursor.getColumnIndexOrThrow("PURCHASE_HEIGHT_UNIT")));
+
                     animalJson.put("date_distributed",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_DISTRIBUTED")));
                     animalJson.put("date_sold",animalCursor.getString(animalCursor.getColumnIndexOrThrow("DATE_SOLD")));
                     animalJson.put("sale_price",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_PRICE")));
+
+                    animalJson.put("sale_weight",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_WEIGHT")));
+                    animalJson.put("sale_weight_unit",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_WEIGHT_UNIT")));
+                    animalJson.put("sale_height",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_HEIGHT")));
+                    animalJson.put("sale_height_unit",animalCursor.getString(animalCursor.getColumnIndexOrThrow("SALE_HEIGHT_UNIT")));
+
+
                     animalJson.put("create_user",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_USER")));
                     animalJson.put("create_timestamp",animalCursor.getString(animalCursor.getColumnIndexOrThrow("CREATE_TIMESTAMP")));
                     animalJson.put("record_type",animalCursor.getString(animalCursor.getColumnIndexOrThrow("RECORD_TYPE")));

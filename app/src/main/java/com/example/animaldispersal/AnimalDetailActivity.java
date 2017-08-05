@@ -1,39 +1,39 @@
 package com.example.animaldispersal;
 
-import org.apache.commons.lang.RandomStringUtils;
-
+import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Menu;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -51,24 +51,19 @@ import android.widget.Toast;
 import com.example.animaldispersal.adapter.EventAdapter;
 import com.example.animaldispersal.dataobject.Animal;
 import com.example.animaldispersal.dataobject.Caretaker;
+import com.example.animaldispersal.dataobject.Event;
 import com.example.animaldispersal.localdb.LocalDBHelper;
 import com.example.animaldispersal.nfc.NfcWriteActivity;
 import com.example.davaodemo.R;
-import com.example.animaldispersal.dataobject.Event;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.ndeftools.Message;
+import org.ndeftools.MimeRecord;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import org.ndeftools.Message;
-import org.ndeftools.MimeRecord;
-
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.nfc.NdefMessage;
-
-import android.util.Log;
 
 
 public class AnimalDetailActivity extends NfcWriteActivity {
@@ -84,6 +79,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private EditText mDatePurchased;
     private EditText mPurchasePrice;
     private EditText mDateDistributed;
+    private EditText mPurchaseWeight;
+    private EditText mPurchaseHeight;
+    private EditText mSaleWeight;
+    private EditText mSaleHeight;
     private EditText mDateSold;
     private EditText mSalePrice;
 
@@ -95,6 +94,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private EditText mCaretakerAddr3;
 
     private Spinner mCountry2;
+    private Spinner mPurchaseWeightUnit;
+    private Spinner mPurchaseHeightUnit;
+    private Spinner mSaleWeightUnit;
+    private Spinner mSaleHeightUnit;
 
     private RadioGroup mGenderRadioGroup;
     private RadioButton mGenderRadioButton;
@@ -114,6 +117,10 @@ public class AnimalDetailActivity extends NfcWriteActivity {
     private TextView datePurchasedLabel;
     private TextView purchasePriceLabel;
     private TextView dateDistributedLabel;
+    private TextView purchaseWeightLabel;
+    private TextView purchaseHeightLabel;
+    private TextView saleWeightLabel;
+    private TextView saleHeightLabel;
     private TextView dateSoldLabel;
     private TextView salePriceLabel;
     private TextView caretakerIdLabel;
@@ -204,6 +211,14 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         mDateOfBirth = (EditText)findViewById(R.id.date_of_birth);
         mDatePurchased = (EditText)findViewById(R.id.date_purchased);
         mPurchasePrice = (EditText)findViewById(R.id.purchase_price);
+        mPurchaseWeight = (EditText)findViewById(R.id.purchase_weight);
+        mPurchaseHeight = (EditText)findViewById(R.id.purchase_height);
+        mPurchaseWeightUnit = (Spinner) findViewById(R.id.purchase_weight_unit);
+        mPurchaseHeightUnit = (Spinner)findViewById(R.id.purchase_height_unit);
+        mSaleWeight = (EditText)findViewById(R.id.sale_weight);
+        mSaleHeight = (EditText)findViewById(R.id.sale_height);
+        mSaleWeightUnit = (Spinner) findViewById(R.id.sale_weight_unit);
+        mSaleHeightUnit = (Spinner)findViewById(R.id.sale_height_unit);
         mDateDistributed = (EditText)findViewById(R.id.date_distributed);
         mDateSold = (EditText)findViewById(R.id.date_sold);
         mSalePrice = (EditText)findViewById(R.id.sale_price);
@@ -230,8 +245,12 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         datePurchasedLabel     =(TextView)findViewById(R.id.datePurchasedLabel);
         purchasePriceLabel     =(TextView)findViewById(R.id.purchasePriceLabel);
         dateDistributedLabel   =(TextView)findViewById(R.id.dateDistributedLabel);
+        purchaseWeightLabel =(TextView)findViewById(R.id.purchaseWeightLabel);
+        purchaseHeightLabel =(TextView)findViewById(R.id.purchaseHeightLabel);
         dateSoldLabel          =(TextView)findViewById(R.id.dateSoldLabel);
         salePriceLabel         =(TextView)findViewById(R.id.salePriceLabel);
+        saleWeightLabel =(TextView)findViewById(R.id.saleWeightLabel);
+        saleHeightLabel =(TextView)findViewById(R.id.saleHeightLabel);
         caretakerIdLabel       =(TextView)findViewById(R.id.caretakerIdLabel);
         caretakerNameLabel     =(TextView)findViewById(R.id.caretakerNameLabel);
         caretakerTelephoneLabel=(TextView)findViewById(R.id.caretakerTelephoneLabel);
@@ -344,8 +363,13 @@ public class AnimalDetailActivity extends NfcWriteActivity {
             String extrasAnimalId = extras.getString("SELECTED_ANIMAL_ID");
             Log.d(TAG, "extrasAnimalId: "+extrasAnimalId);
             if ((isExistingAnimal(extrasAnimalId))){
-                fillExistingAnimal(extrasAnimalId);
-            }else fillNewAnimal(true, extrasAnimalId);
+                try {
+                    fillExistingAnimal(extrasAnimalId);
+                } catch (Exception e){
+                    toast("An unexpected error occurred. Please contact the administrator.");
+                }
+            }
+            else fillNewAnimal(true, extrasAnimalId);
 
             nfcScanEntryTimestamp = extras.getString("NFC_SCAN_ENTRY_TIMESTAMP");
             /*
@@ -500,8 +524,9 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                         //Check mandatory fields are filled
 
                         if (isCaretakerIdEmpty()) {
-                            Toast toast = Toast.makeText(AnimalDetailActivity.this, getString(R.string.fill_in_caretaker_id), Toast.LENGTH_LONG);
-                            toast.show();
+                            //Toast toast = Toast.makeText(AnimalDetailActivity.this, getString(R.string.fill_in_caretaker_id), Toast.LENGTH_LONG);
+                            //toast.show();
+                            toast(getString(R.string.fill_in_caretaker_id));
                             break;
                         }
                         if (TextUtils.isEmpty(mAnimalId.getText().toString().trim()) ||
@@ -510,7 +535,8 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                                     mAnimalTypeRadioGroup.getCheckedRadioButtonId() == -1 ||
                                     mGenderRadioGroup.getCheckedRadioButtonId() == -1
                                     ) {
-                            makeToast();
+                            //makeToast();
+                            toast(getString(R.string.fill_in_mandatory_fields));
                             break;
                         }
                         saveRecords();
@@ -780,7 +806,7 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         //is there a way that oncreate is not called?
         //SOLUTION: I set onconfig in manifest to bar from calling oncreate when orientation is changed
         if (!getScanOn())
-            toast("Error. You can only scan a tag from the home screen.");
+            toast(getString(R.string.nfc_location_scan_error));
 
         if (dialog!= null) {
             dialog.dismiss();
@@ -923,15 +949,30 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         }
         if (existingAnimal.getDatePurchased() != null)
             mDatePurchased.setText(existingAnimal.getDatePurchased());
-        if (existingAnimal.getPurchasePrice() != null) {
+        if (existingAnimal.getPurchasePrice() != null)
             mPurchasePrice.setText(existingAnimal.getPurchasePrice());
-        }
+        if (existingAnimal.getPurchaseWeight() != null)
+            mPurchaseWeight.setText(existingAnimal.getPurchaseWeight());
+        if (existingAnimal.getPurchaseWeightUnit() != null) {
+            mPurchaseWeightUnit.setSelection(Integer.parseInt(existingAnimal.getPurchaseWeightUnit()));}
+        if (existingAnimal.getPurchaseHeight() != null)
+            mPurchaseHeight.setText(existingAnimal.getPurchaseHeight());
+        if (existingAnimal.getPurchaseHeightUnit() != null) {
+            mPurchaseHeightUnit.setSelection(Integer.parseInt(existingAnimal.getPurchaseHeightUnit()));}
         if (existingAnimal.getDateDistributed()!= null)
             mDateDistributed.setText(existingAnimal.getDateDistributed());
         if (existingAnimal.getSalePrice() != null)
             mSalePrice.setText(existingAnimal.getSalePrice());
         if (existingAnimal.getDateSold()!= null)
             mDateSold.setText(existingAnimal.getDateSold());
+        if (existingAnimal.getSaleWeight() != null)
+            mSaleWeight.setText(existingAnimal.getSaleWeight());
+        if (existingAnimal.getSaleWeightUnit() != null) {
+            mSaleWeightUnit.setSelection(Integer.parseInt(existingAnimal.getSaleWeightUnit()));}
+        if (existingAnimal.getSaleHeight() != null)
+            mSaleHeight.setText(existingAnimal.getSaleHeight());
+        if (existingAnimal.getSaleHeightUnit() != null) {
+            mSaleHeightUnit.setSelection(Integer.parseInt(existingAnimal.getSaleHeightUnit()));}
 
         //FILL CARETAKER DETAILS
         /*if (existingCaretaker == null) {
@@ -1076,16 +1117,28 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mDateOfBirth.setEnabled(true);
                 mDatePurchased.setEnabled(true);
                 mPurchasePrice.setEnabled(true);
+                mPurchaseWeight.setEnabled(true);
+                mPurchaseWeightUnit.setEnabled(true);
+                mPurchaseHeight.setEnabled(true);
+                mPurchaseHeightUnit.setEnabled(true);
                 mDateDistributed.setEnabled(true);
                 mDateSold.setEnabled(true);
                 mSalePrice.setEnabled(true);
+                mSaleWeight.setEnabled(true);
+                mSaleWeightUnit.setEnabled(true);
+                mSaleHeight.setEnabled(true);
+                mSaleHeightUnit.setEnabled(true);
 
                 mDateOfBirth.getBackground().clearColorFilter();
                 mDatePurchased.getBackground().clearColorFilter();
                 mPurchasePrice.getBackground().clearColorFilter();
-                mDateDistributed.getBackground().clearColorFilter();
                 mDateSold.getBackground().clearColorFilter();
+                mPurchaseWeight.getBackground().clearColorFilter();
+                mPurchaseHeight.getBackground().clearColorFilter();
+                mDateDistributed.getBackground().clearColorFilter();
                 mSalePrice.getBackground().clearColorFilter();
+                mSaleWeight.getBackground().clearColorFilter();
+                mSaleHeight.getBackground().clearColorFilter();
 
                 mCaretakerId.setEnabled(true);
                 mCaretakerName.setEnabled(true);
@@ -1160,6 +1213,26 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                     mPurchasePrice.setEnabled(true);
                     mPurchasePrice.getBackground().clearColorFilter();
                     purchasePriceLabel.setTextColor(colorEmphasis);
+                }
+                if (originalServerAnimal.getPurchaseWeight() == null){
+                    mPurchaseWeight.setEnabled(true);
+                    purchaseWeightLabel.setTextColor(colorEmphasis);
+                    mPurchaseWeightUnit.setEnabled(true);
+                }
+                if (originalServerAnimal.getPurchaseHeight() == null){
+                    mPurchaseHeight.setEnabled(true);
+                    purchaseHeightLabel.setTextColor(colorEmphasis);
+                    mPurchaseHeightUnit.setEnabled(true);
+                }
+                if (originalServerAnimal.getSaleWeight() == null){
+                    mSaleWeight.setEnabled(true);
+                    saleWeightLabel.setTextColor(colorEmphasis);
+                    mSaleWeightUnit.setEnabled(true);
+                }
+                if (originalServerAnimal.getSaleHeight() == null){
+                    mSaleHeight.setEnabled(true);
+                    saleHeightLabel.setTextColor(colorEmphasis);
+                    mSaleHeightUnit.setEnabled(true);
                 }
                 if (originalServerAnimal.getDateDistributed() == null){
                     mDateDistributed.setEnabled(true);
@@ -1276,8 +1349,12 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 datePurchasedLabel.setTextColor(colorPrimaryDark);
                 purchasePriceLabel.setTextColor(colorPrimaryDark);
                 dateDistributedLabel.setTextColor(colorPrimaryDark);
+                purchaseWeightLabel.setTextColor(colorPrimaryDark);
+                purchaseHeightLabel.setTextColor(colorPrimaryDark);
                 dateSoldLabel.setTextColor(colorPrimaryDark);
                 salePriceLabel.setTextColor(colorPrimaryDark);
+                saleWeightLabel.setTextColor(colorPrimaryDark);
+                saleHeightLabel.setTextColor(colorPrimaryDark);
 
                 caretakerIdLabel.setTextColor(colorPrimaryDark);
                 caretakerNameLabel.setTextColor(colorPrimaryDark);
@@ -1299,9 +1376,18 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 mDateOfBirth.setEnabled(false);
                 mDatePurchased.setEnabled(false);
                 mPurchasePrice.setEnabled(false);
+                mPurchaseWeight.setEnabled(false);
+                mPurchaseWeightUnit.setEnabled(false);
+                mPurchaseHeight.setEnabled(false);
+                mPurchaseHeightUnit.setEnabled(false);
                 mDateDistributed.setEnabled(false);
                 mDateSold.setEnabled(false);
                 mSalePrice.setEnabled(false);
+                mSaleWeight.setEnabled(false);
+                mSaleWeightUnit.setEnabled(false);
+                mSaleHeight.setEnabled(false);
+                mSaleHeightUnit.setEnabled(false);
+
 
                 mCaretakerId.setEnabled(false);
                 mCaretakerName.setEnabled(false);
@@ -1379,9 +1465,21 @@ public class AnimalDetailActivity extends NfcWriteActivity {
                 String.valueOf(mCountry2.getSelectedItemPosition()),
                 getText(mDatePurchased),
                 getText(mPurchasePrice),
+                getText(mPurchaseWeight),
+                getUnit(mPurchaseWeight, mPurchaseWeightUnit),
+                //String.valueOf(mPurchaseWeightUnit.getSelectedItemPosition()),
+                getText(mPurchaseHeight),
+                getUnit(mPurchaseHeight, mPurchaseHeightUnit),
+                //String.valueOf(mPurchaseHeightUnit.getSelectedItemPosition()),
                 getText(mDateDistributed),
                 getText(mDateSold),
                 getText(mSalePrice),
+                getText(mSaleWeight),
+                getUnit(mSaleWeight, mSaleWeightUnit),
+                //String.valueOf(mSaleWeightUnit.getSelectedItemPosition()),
+                getText(mSaleHeight),
+                getUnit(mSaleHeight, mSaleHeightUnit),
+                //String.valueOf(mSaleHeightUnit.getSelectedItemPosition()),
                 caretakerUid,
                 animalRecordType,
                 nfcScanEntryTimestamp,
@@ -1665,20 +1763,26 @@ public class AnimalDetailActivity extends NfcWriteActivity {
 
     }
 
+    /* REDUNDANT
     private void makeToast() {
-        Toast.makeText(AnimalDetailActivity.this, "Please fill in Country, Animal Type and Gender." , Toast.LENGTH_LONG).show();
+        Toast.makeText(AnimalDetailActivity.this, R.string.mandatory_fields_not_filled_error , Toast.LENGTH_LONG).show();
     }
+    */
 
     private boolean isCaretakerIdEmpty(){
 
         if(TextUtils.isEmpty(mCaretakerId.getText().toString().trim()) && (
                 (!TextUtils.isEmpty(mCaretakerName.getText().toString().trim())) ||
-                        (!TextUtils.isEmpty(mCaretakerTel.getText().toString().trim()))
+                (!TextUtils.isEmpty(mCaretakerTel.getText().toString().trim())) ||
+                (!TextUtils.isEmpty(mCaretakerAddr1.getText().toString().trim())) ||
+                (!TextUtils.isEmpty(mCaretakerAddr2.getText().toString().trim())) ||
+                (!TextUtils.isEmpty(mCaretakerAddr3.getText().toString().trim()))
                 ))
             return true;
         return false;
 
     }
+
 
     private boolean saveCaretaker2(){
 
@@ -1788,6 +1892,13 @@ public class AnimalDetailActivity extends NfcWriteActivity {
         else return null;
     }
 
+    private String getUnit(TextView textView, Spinner spinner){
+        if (textView == null) return null;
+        if (!TextUtils.isEmpty(textView.getText().toString().trim()))
+            return String.valueOf(spinner.getSelectedItemPosition());
+        else return null;
+    }
+
     /*
     private String getText(Spinner spinner){
         if (spinner == null) return null;
@@ -1887,6 +1998,11 @@ public class AnimalDetailActivity extends NfcWriteActivity {
             countryRecord.setMimeType("cci/animalcountry");
             countryRecord.setData(String.valueOf(mCountry2.getSelectedItemPosition()).getBytes("UTF-8"));
             message.add(countryRecord);
+
+            MimeRecord versionRecord = new MimeRecord();
+            versionRecord.setMimeType("cci/version");
+            versionRecord.setData("1.1".getBytes("UTF-8"));
+            message.add(versionRecord);
 
         }catch (Exception e){
             Log.e(TAG, e.getMessage());

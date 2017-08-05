@@ -11,26 +11,24 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.animaldispersal.http.SyncHelper;
 import com.example.animaldispersal.localdb.LocalDBHelper;
 import com.example.animaldispersal.nfc.NfcReadActivity;
 import com.example.animaldispersal.utils.NetworkStateChangeReceiver;
-import static com.example.animaldispersal.utils.NetworkStateChangeReceiver.IS_NETWORK_AVAILABLE;
 import com.example.davaodemo.R;
-import com.example.animaldispersal.http.SyncHelper;
 
 import org.json.JSONArray;
-
 import org.ndeftools.Message;
 import org.ndeftools.MimeRecord;
 import org.ndeftools.Record;
@@ -39,6 +37,8 @@ import org.ndeftools.wellknown.TextRecord;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import static com.example.animaldispersal.utils.NetworkStateChangeReceiver.IS_NETWORK_AVAILABLE;
 
 public class MainActivity extends NfcReadActivity {
 
@@ -143,18 +143,23 @@ public class MainActivity extends NfcReadActivity {
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isOnline()) {
-                    Log.d(TAG, String.valueOf( localDBHelper.getCountUnsyncRecords())+" record(s) have not been synced -b4");
-                    SyncHelper syncHelper = new SyncHelper(MainActivity.this);
-                    syncHelper.DeviceDataUpload();
-                    //Toast.makeText(MainActivity.this, "Sync Completed", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    toast(getString(R.string.internet_connection_lost));
-                    //setupConnectionCheck();
+                try {
+                    if (isOnline()) {
+                        Log.d(TAG, String.valueOf(localDBHelper.getCountUnsyncRecords()) + " record(s) have not been synced -b4");
+                        SyncHelper syncHelper = new SyncHelper(MainActivity.this);
+                        syncHelper.DeviceDataUpload();
+                        //Toast.makeText(MainActivity.this, "Sync Completed", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        toast(getString(R.string.internet_connection_lost));
+                        //setupConnectionCheck();
+                    }
+
+                    fillData();
+                } catch(Exception e){
+                    toast("An unexpected error occurred. Please contact the administrator.");
                 }
 
-                fillData();
             }
         });
 
@@ -282,14 +287,14 @@ public class MainActivity extends NfcReadActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
 
 
-        /* TODO REMOVE WHEN LIVE*/
+        /* TODO REMOVE WHEN LIVE
         //return super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.tag_lock);
         if (AppController.getInstance().isTagLock()){
             item.setTitle("Turn off Tag Lock");
         }
         else item.setTitle("Turn on Tag Lock");
-
+        */
         return super.onPrepareOptionsMenu(menu);
 
 
@@ -316,7 +321,7 @@ public class MainActivity extends NfcReadActivity {
                 startActivity(i);
                 //finish();
                 break;
-            /* TODO REMOVE WHEN LIVE*/
+            /* TODO REMOVE WHEN LIVE
             case R.id.tag_lock:
                 if(AppController.getInstance().isTagLock()) {
                     AppController.getInstance().setTagLock(false);
@@ -327,11 +332,6 @@ public class MainActivity extends NfcReadActivity {
                     toast("Tags WILL be locked");
                     item.setTitle("Turn off Tag Lock");
                 }
-                break;
-
-            /*case R.id.db:
-                Intent dbmanager = new Intent(getApplicationContext(),AndroidDatabaseManager.class);
-                startActivity(dbmanager);
                 break;
             */
             default:
@@ -395,6 +395,13 @@ public class MainActivity extends NfcReadActivity {
         }*/
     }
 
+    private void startAnimalDetailActivity(String tagAnimalId, String tagSupervisor, String tagCountry, String tagVersion){
+
+        //process tagCountry based on tagVersion
+        tagCountry = getTagCountry(tagCountry, tagVersion);
+        startAnimalDetailActivity(tagAnimalId,tagSupervisor,tagCountry);
+
+    }
 
     private void  startAnimalDetailActivity(String tagAnimalId, String tagSupervisor, String tagCountry){
         Log.d(TAG,"AnimalId read from NFC tag: "+tagAnimalId);
@@ -404,53 +411,41 @@ public class MainActivity extends NfcReadActivity {
             return;
         }
 
+        //VY 20170717 redesign nfc checks
         int role = AppController.getInstance().getUserRole();
-        switch (role) {
-            case 2:
-                /*
-                if (getIsTagReadOnly()) {
-                    if (localDBHelper.getAnimalById(tagAnimalId)== null) {
-                        toast("Tag data not synced.");
+
+        if (getIsTagReadOnly()) {
+            if (localDBHelper.getAnimalById(tagAnimalId) == null) {
+                toast(getString(R.string.nfc_tag_not_synced));
+                return;
+            }
+            switch (role) {
+                case 1:
+                    if (!checkTagCountry(tagCountry)) {
                         return;
                     }
-                }*/
-                break;
-            case 1:
-                if (getIsTagReadOnly()) {
-                    if (tagCountry == null) {
-                        toast(getString(R.string.nfc_tag_no_country));
+                    break;
+                case 0:
+                    if (!checkTagSupervisor(tagSupervisor)) {
                         return;
                     }
                     if (!checkTagCountry(tagCountry)) {
-                        toast(getString(R.string.nfc_tag_no_access));
                         return;
                     }
-                    /*
-                    if (localDBHelper.getAnimalById(tagAnimalId)== null) {
-                        toast("Tag data not synced.");
-                        return;
-                    }*/
-                }
-                break;
-            case 0:
-                if (getIsTagReadOnly()) {
-                    if (tagSupervisor == null) {
-                        toast(getString(R.string.nfc_tag_no_supervisor));
-                        return;
-                    }
-                    if (!checkTagSupervisor(tagSupervisor)) {
-                        toast(getString(R.string.nfc_tag_no_access));
-                        return;
-                    }
-                }
-                break;
-        }
+                    break;
+                default: //CASE 2 INTERNATIONAL MGR CASE IS INCLUDED IN DEFAULT. THERE IS NO CHECKING FOR INTL MGR
+                    break;
+            }
 
+        /*VY 20170717 redesign NFC checks*/
+        /*
         if (getIsTagReadOnly()) {
             if (localDBHelper.getAnimalById(tagAnimalId)== null) {
                 toast(getString(R.string.nfc_tag_not_synced));
                 return;
             }
+        }
+        */
         }
 
         Bundle dataBundle = new Bundle();
@@ -465,24 +460,71 @@ public class MainActivity extends NfcReadActivity {
         startActivity(intent);
     }
 
+
+
+    private String getTagCountry(String tagCountry, String tagVersion){
+
+        Log.d(TAG, "tagCountry b4 process "+tagCountry);
+        //the null checking for tagCountry is in the checkTagCountry method
+        //this method solely exists to get the tagCountry based on the version
+        if (tagCountry == null) return tagCountry;
+
+        if (!"1.1".equalsIgnoreCase(tagVersion)){
+            switch (tagCountry){
+                case "Bangladesh":
+                    tagCountry = "1";
+                    break;
+                case "Pakistan":
+                    tagCountry = "2";
+                    break;
+                case "Philippines":
+                    tagCountry = "3";
+                    break;
+                default: break;
+            }
+        }
+
+        Log.d(TAG, "tagCountry after process "+tagCountry);
+        return tagCountry;
+    }
+
+
     private boolean checkTagCountry(String tagCountry){
+
         SharedPreferences mPrefs = getSharedPreferences("animalDispersalPrefs", Context.MODE_PRIVATE);
         String loginCountry = mPrefs.getString("country", "");
+
         Log.d(TAG, "tagCountry "+tagCountry);
         Log.d(TAG, "loginCountry " +loginCountry);
 
-        if (loginCountry.equalsIgnoreCase(tagCountry))
-            return true;
-        return false;
-
+        if (tagCountry == null) {
+            toast(getString(R.string.nfc_tag_no_country));
+            return false;
+        }
+        if (!loginCountry.equalsIgnoreCase(tagCountry)){
+            toast(getString(R.string.nfc_tag_no_access));
+            return false;
+        }
+        return true;
     }
 
     private boolean checkTagSupervisor(String tagSupervisor){
         SharedPreferences mPrefs = getSharedPreferences("animalDispersalPrefs", Context.MODE_PRIVATE);
         String loginUser = mPrefs.getString("username", "");
-        if (loginUser.equalsIgnoreCase(tagSupervisor))
-            return true;
-        return false;
+
+        Log.d(TAG, "tagSupervisor "+tagSupervisor);
+        Log.d(TAG, "loginUser " +loginUser);
+
+        if (tagSupervisor == null) {
+            toast(getString(R.string.nfc_tag_no_supervisor));
+            return false;
+        }
+        if (!loginUser.equalsIgnoreCase(tagSupervisor)) {
+            toast(getString(R.string.nfc_tag_no_access));
+            return false;
+        }
+        return true;
+
 
     }
 
@@ -535,6 +577,7 @@ public class MainActivity extends NfcReadActivity {
         String tagAnimalId = null;
         String tagSupervisor = null;
         String tagCountry = null;
+        String tagVersion = null;
 
         for(int k = 0; k < message.size(); k++) {
             Record record = message.get(k);
@@ -555,7 +598,9 @@ public class MainActivity extends NfcReadActivity {
                     if (mr.getMimeType().equals("cci/animalcountry")) {
                         tagCountry = new String(mr.getData(), "UTF-8");
                     }
-
+                    if (mr.getMimeType().equals("cci/version")) {
+                        tagVersion = new String(mr.getData(), "UTF-8");
+                    }
 
                 } else if (record instanceof ExternalTypeRecord) {
                     // ..
@@ -572,10 +617,7 @@ public class MainActivity extends NfcReadActivity {
             }
         }
 
-        startAnimalDetailActivity(tagAnimalId, tagSupervisor, tagCountry);
-
-
-
+        startAnimalDetailActivity(tagAnimalId, tagSupervisor, tagCountry, tagVersion);
         // show in gui
         //showList();
 

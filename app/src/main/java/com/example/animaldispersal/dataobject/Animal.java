@@ -18,9 +18,17 @@ public class Animal implements Parcelable {
     private String country;
     private String datePurchased;
     private String purchasePrice;
+    private String purchaseWeight;
+    private String purchaseHeight;
+    private String purchaseWeightUnit;
+    private String purchaseHeightUnit;
     private String dateDistributed;
     private String dateSold;
     private String salePrice;
+    private String saleWeight;
+    private String saleHeight;
+    private String saleWeightUnit;
+    private String saleHeightUnit;
     private String recordType;
     private String lastUpdateUser;
     private String lastUpdateTimestamp;
@@ -31,6 +39,7 @@ public class Animal implements Parcelable {
     private String sync_message;
     private String nfcScanEntryTimestamp;
     private String nfcScanSaveTimestamp;
+
 
 
     //private List<Event> events;
@@ -50,9 +59,17 @@ public class Animal implements Parcelable {
         out.writeString(country);
         out.writeString(datePurchased);
         out.writeString(purchasePrice);
+        out.writeString(purchaseWeight);
+        out.writeString(purchaseWeightUnit);
+        out.writeString(purchaseHeight);
+        out.writeString(purchaseHeightUnit);
         out.writeString(dateDistributed);
         out.writeString(dateSold);
         out.writeString(salePrice);
+        out.writeString(saleWeight);
+        out.writeString(saleWeightUnit);
+        out.writeString(saleHeight);
+        out.writeString(saleHeightUnit);
         out.writeString(caretakerUid);
         out.writeString(recordType);
         out.writeString(lastUpdateUser);
@@ -87,9 +104,17 @@ public class Animal implements Parcelable {
         country = in.readString();
         datePurchased = in.readString();
         purchasePrice = in.readString();
+        purchaseWeight = in.readString();
+        purchaseWeightUnit = in.readString();
+        purchaseHeight = in.readString();
+        purchaseHeightUnit = in.readString();
         dateDistributed = in.readString();
         dateSold = in.readString();
         salePrice  = in.readString();
+        saleWeight = in.readString();
+        saleWeightUnit = in.readString();
+        saleHeight = in.readString();
+        saleHeightUnit = in.readString();
         caretakerUid = in.readString();
         recordType = in.readString();
         lastUpdateUser = in.readString();
@@ -114,9 +139,17 @@ public class Animal implements Parcelable {
                   String mCountry,
                   String mDatePurchased,
                   String mPurchasePrice,
+                  String mPurchaseWeight,
+                  String mPurchaseWeightUnit,
+                  String mPurchaseHeight,
+                  String mPurchaseHeightUnit,
                   String mDateDistributed,
                   String mDateSold,
                   String mSalePrice,
+                  String mSaleWeight,
+                  String mSaleWeightUnit,
+                  String mSaleHeight,
+                  String mSaleHeightUnit,
                   String mCaretakerUid,
                   String mRecordType,
                   String mNfcScanEntryTimestamp,
@@ -129,9 +162,17 @@ public class Animal implements Parcelable {
         country = mCountry;
         datePurchased = mDatePurchased;
         purchasePrice = mPurchasePrice;
+        purchaseWeight = mPurchaseWeight;
+        purchaseWeightUnit = mPurchaseWeightUnit;
+        purchaseHeight = mPurchaseHeight;
+        purchaseHeightUnit = mPurchaseHeightUnit;
         dateDistributed = mDateDistributed;
         dateSold = mDateSold;
         salePrice  = mSalePrice;
+        saleWeight = mSaleWeight;
+        saleWeightUnit = mSaleWeightUnit;
+        saleHeight = mSaleHeight;
+        saleHeightUnit = mSaleHeightUnit;
         caretakerUid = mCaretakerUid;
         recordType = mRecordType;
         nfcScanEntryTimestamp = mNfcScanEntryTimestamp;
@@ -203,6 +244,22 @@ public class Animal implements Parcelable {
         this.purchasePrice = purchasePrice;
     }
 
+    public String getPurchaseWeight() {return purchaseWeight;}
+
+    public void setPurchaseWeight(String purchaseWeight) { this.purchaseWeight = purchaseWeight; }
+
+    public String getPurchaseHeight() { return purchaseHeight; }
+
+    public void setPurchaseHeight(String purchaseHeight) {this.purchaseHeight = purchaseHeight;}
+
+    public String getPurchaseWeightUnit() {return purchaseWeightUnit;}
+
+    public void setPurchaseWeightUnit(String purchaseWeightUnit) { this.purchaseWeightUnit = purchaseWeightUnit;}
+
+    public String getPurchaseHeightUnit() {return purchaseHeightUnit;}
+
+    public void setPurchaseHeightUnit(String purchaseHeightUnit) { this.purchaseHeightUnit = purchaseHeightUnit;}
+
     public String getDateDistributed() {
         return dateDistributed;
     }
@@ -226,6 +283,22 @@ public class Animal implements Parcelable {
     public void setSalePrice(String salePrice) {
         this.salePrice = salePrice;
     }
+
+    public String getSaleWeight() {return saleWeight;    }
+
+    public void setSaleWeight(String saleWeight) {this.saleWeight = saleWeight;}
+
+    public String getSaleHeight() {return saleHeight;}
+
+    public void setSaleHeight(String saleHeight) {this.saleHeight = saleHeight;}
+
+    public String getSaleWeightUnit() {return saleWeightUnit;}
+
+    public void setSaleWeightUnit(String saleWeightUnit) {this.saleWeightUnit = saleWeightUnit;}
+
+    public String getSaleHeightUnit() {return saleHeightUnit;}
+
+    public void setSaleHeightUnit(String saleHeightUnit) {this.saleHeightUnit = saleHeightUnit;}
 
     public String getRecordType() {
         return recordType;
@@ -296,9 +369,17 @@ public class Animal implements Parcelable {
                 ", country='" + country + '\'' +
                 ", datePurchased='" + datePurchased + '\'' +
                 ", purchasePrice='" + purchasePrice + '\'' +
+                ", purchaseWeight='" + purchaseWeight + '\'' +
+                ", purchaseWeightUnit='" + purchaseWeightUnit + '\'' +
+                ", purchaseHeight='" + purchaseHeight + '\'' +
+                ", purchaseHeightUnit='" + purchaseHeightUnit + '\'' +
                 ", dateDistributed='" + dateDistributed + '\'' +
                 ", dateSold='" + dateSold + '\'' +
                 ", salePrice='" + salePrice + '\'' +
+                ", saleWeight='" + saleWeight + '\'' +
+                ", saleWeightUnit='" + saleWeightUnit + '\'' +
+                ", saleHeight='" + saleHeight + '\'' +
+                ", saleHeightUnit='" + saleHeightUnit + '\'' +
                 ", recordType='" + recordType + '\'' +
                 ", lastUpdateUser='" + lastUpdateUser + '\'' +
                 ", lastUpdateTimestamp='" + lastUpdateTimestamp + '\'' +
@@ -330,11 +411,27 @@ public class Animal implements Parcelable {
             return false;
         if (!ObjectUtils.equals(getPurchasePrice(),animal.getPurchasePrice()))
             return false;
+        if (!ObjectUtils.equals(getPurchaseWeight(),animal.getPurchaseWeight()))
+            return false;
+        if (!ObjectUtils.equals(getPurchaseWeightUnit(),animal.getPurchaseWeightUnit()))
+            return false;
+        if (!ObjectUtils.equals(getPurchaseHeight(),animal.getPurchaseHeight()))
+            return false;
+        if (!ObjectUtils.equals(getPurchaseHeightUnit(),animal.getPurchaseHeightUnit()))
+            return false;
         if (!ObjectUtils.equals(getDateDistributed(),animal.getDateDistributed()))
             return false;
         if (!ObjectUtils.equals(getDateSold(),animal.getDateSold()))
             return false;
         if (!ObjectUtils.equals(getSalePrice(),animal.getSalePrice()))
+            return false;
+        if (!ObjectUtils.equals(getSaleWeight(),animal.getSaleWeight()))
+            return false;
+        if (!ObjectUtils.equals(getSaleWeightUnit(),animal.getSaleWeightUnit()))
+            return false;
+        if (!ObjectUtils.equals(getSaleHeight(),animal.getSaleHeight()))
+            return false;
+        if (!ObjectUtils.equals(getSaleHeightUnit(),animal.getSaleHeightUnit()))
             return false;
         if (!ObjectUtils.equals(getCaretakerUid(),animal.getCaretakerUid()))
             return false;

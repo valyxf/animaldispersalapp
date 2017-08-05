@@ -6,10 +6,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,8 +23,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.davaodemo.R;
 import com.example.animaldispersal.dataobject.Event;
+import com.example.davaodemo.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -119,10 +120,10 @@ public class EventDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TimePickerDialog dialog
-                        = new TimePickerDialog(v.getContext(), AlertDialog.THEME_HOLO_LIGHT,
+                        = new TimePickerDialog(v.getContext(),AlertDialog.THEME_TRADITIONAL,
                         timePickerListener,
                         cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),false);
-
+                dialog.setInverseBackgroundForced(true);
                 dialog.show();
             }
         });
@@ -136,8 +137,8 @@ public class EventDetailActivity extends AppCompatActivity {
                         TextUtils.isEmpty(mEventTime.getText().toString()) ||
                         TextUtils.isEmpty(mEventDate.getText().toString()))
                 {
-                    Toast.makeText(getApplicationContext(), "Event Type, Date and Time must be filled", Toast.LENGTH_LONG).show();
-
+                    //Toast.makeText(getApplicationContext(), R.string.event_details_not_filled_error, Toast.LENGTH_LONG).show();
+                    toast(getString(R.string.event_details_not_filled_error));
                 }
                 else
                 {
@@ -294,7 +295,7 @@ public class EventDetailActivity extends AppCompatActivity {
         //VY 12MAR17 not going to use mode to determine layout of items anymore. Only going to use recordType.
         //S - disabled, not S - enabled
         //if ("V".equals(mode)) {
-        if ("S".equals(eventRecordType)){
+        if ("US".equals(eventRecordType)){
             mEventType.setEnabled(false);
             mEventDate.setEnabled(false);
             mEventTime.setEnabled(false);
@@ -335,6 +336,12 @@ public class EventDetailActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(textView.getText().toString().trim()))
             return textView.getText().toString().trim();
         else return null;
+    }
+
+    public void toast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL| Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
     }
 
 }

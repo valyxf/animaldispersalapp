@@ -2,7 +2,6 @@ package com.example.animaldispersal.utils;
 
 import android.text.Editable;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
 

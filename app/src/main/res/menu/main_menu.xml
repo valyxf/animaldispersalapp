@@ -13,12 +13,12 @@
         android:icon="@drawable/ic_settings"
         app:showAsAction="always" >
     </item>
-<!-- TODO TO BE REMOVED WHEN LIVE-->
+<!-- TODO TO BE REMOVED WHEN LIVE
     <item
         android:id="@+id/tag_lock"
         android:title="Turn off Tag Lock (TBR)"
         app:showAsAction="never" >
-    </item>
+    </item>-->
     <!-- DECAPRECATED
     <item
         android:id="@+id/add_animal"

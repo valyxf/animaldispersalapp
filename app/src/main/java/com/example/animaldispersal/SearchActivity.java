@@ -1,6 +1,5 @@
 package com.example.animaldispersal;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,13 +15,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.example.animaldispersal.adapter.AnimalAdapter;
+import com.example.animaldispersal.localdb.AnimalTable;
 import com.example.animaldispersal.localdb.LocalDBHelper;
 import com.example.davaodemo.R;
-import com.example.animaldispersal.localdb.AnimalTable;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -42,7 +40,7 @@ public class SearchActivity extends AppCompatActivity {
         relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout1);
 
         searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setQueryHint("Enter search");
+        searchView.setQueryHint(getString(R.string.enter_search));
         searchView.setIconified(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -139,8 +137,8 @@ public class SearchActivity extends AppCompatActivity {
 
         // Fields from the database (projection)
         // Must include the _id column for the adapter to work
-        String[] from = new String[] { AnimalTable.COLUMN_ANIMAL_ID , AnimalTable.COLUMN_ANIMAL_TYPE, AnimalTable.COLUMN_SUPERVISOR,
-                "CARETAKER_NAME", AnimalTable.COLUMN_DATE_DISTRIBUTED};
+        String[] from = new String[] { AnimalTable.COLUMN_ANIMAL_ID , AnimalTable.COLUMN_ANIMAL_TYPE,
+                AnimalTable.COLUMN_SUPERVISOR, "CARETAKER_NAME", AnimalTable.COLUMN_DATE_DISTRIBUTED};
         // Fields on the UI to which we map
         int[] to = new int[] { R.id.animal_id, R.id.animal_type, R.id.supervisor,
                 R.id.caretaker, R.id.date_distributed };

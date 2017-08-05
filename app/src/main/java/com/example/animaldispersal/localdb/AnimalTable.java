@@ -19,8 +19,16 @@ public class AnimalTable {
     public static final String COLUMN_DATE_PURCHASED="DATE_PURCHASED";
     public static final String COLUMN_PURCHASE_PRICE="PURCHASE_PRICE";
     public static final String COLUMN_DATE_DISTRIBUTED="DATE_DISTRIBUTED";
+    public static final String COLUMN_PURCHASE_WEIGHT ="PURCHASE_WEIGHT";
+    public static final String COLUMN_PURCHASE_WEIGHT_UNIT ="PURCHASE_WEIGHT_UNIT";
+    public static final String COLUMN_PURCHASE_HEIGHT ="PURCHASE_HEIGHT";
+    public static final String COLUMN_PURCHASE_HEIGHT_UNIT ="PURCHASE_HEIGHT_UNIT";
     public static final String COLUMN_DATE_SOLD="DATE_SOLD";
     public static final String COLUMN_SALE_PRICE="SALE_PRICE";
+    public static final String COLUMN_SALE_WEIGHT ="SALE_WEIGHT";
+    public static final String COLUMN_SALE_WEIGHT_UNIT ="SALE_WEIGHT_UNIT";
+    public static final String COLUMN_SALE_HEIGHT ="SALE_HEIGHT";
+    public static final String COLUMN_SALE_HEIGHT_UNIT ="SALE_HEIGHT_UNIT";
     public static final String COLUMN_LAST_UPDATE_USER="LAST_UPDATE_USER";
     public static final String COLUMN_LAST_UPDATE_TIMESTAMP="LAST_UPDATE_TIMESTAMP";
     public static final String COLUMN_DELETE_USER="DELETE_USER";
@@ -31,8 +39,6 @@ public class AnimalTable {
     public static final String COLUMN_NFC_SCAN_SAVE_TIMESTAMP="NFC_SCAN_SAVE_TIMESTAMP";
     public static final String COLUMN_SYNC= "SYNC";
     public static final String COLUMN_SYNC_MESSAGE= "SYNC_MESSAGE";
-
-
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_ANIMAL
@@ -48,9 +54,17 @@ public class AnimalTable {
             +	COLUMN_COUNTRY	+ " text, "
             +	COLUMN_DATE_PURCHASED	+ " text, "
             +	COLUMN_PURCHASE_PRICE	+ " text, "
+            +   COLUMN_PURCHASE_WEIGHT + " text, "
+            +   COLUMN_PURCHASE_WEIGHT_UNIT + " text, "
+            +   COLUMN_PURCHASE_HEIGHT + " text, "
+            +   COLUMN_PURCHASE_HEIGHT_UNIT + " text, "
             +	COLUMN_DATE_DISTRIBUTED	+ " text, "
             +	COLUMN_DATE_SOLD	+ " text, "
             +	COLUMN_SALE_PRICE	+ " text, "
+            +   COLUMN_SALE_WEIGHT + " text, "
+            +   COLUMN_SALE_WEIGHT_UNIT + " text, "
+            +   COLUMN_SALE_HEIGHT + " text, "
+            +   COLUMN_SALE_HEIGHT_UNIT + " text, "
             +   COLUMN_SYNC + " text, "
             +   COLUMN_SYNC_MESSAGE + " text, "
             +   COLUMN_LAST_UPDATE_USER + " text, "
@@ -61,6 +75,8 @@ public class AnimalTable {
             +   COLUMN_CREATE_TIMESTAMP + " text, "
             +   COLUMN_NFC_SCAN_ENTRY_TIMESTAMP + " text, "
             +   COLUMN_NFC_SCAN_SAVE_TIMESTAMP + " text "
+            //", "
+            //+   "PRIMARY KEY ("+COLUMN_ACTIVE_FLAG+","+COLUMN_ANIMAL_ID+","+COLUMN_RECORD_TYPE+")"
             + ");";
 
     public AnimalTable(Context context) {

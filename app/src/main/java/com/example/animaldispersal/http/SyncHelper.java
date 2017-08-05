@@ -1,17 +1,6 @@
 package com.example.animaldispersal.http;
 
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,6 +19,16 @@ import com.example.animaldispersal.AppController;
 import com.example.animaldispersal.localdb.LocalDBHelper;
 import com.example.davaodemo.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Created by user on 21/6/2016.
  */
@@ -41,9 +40,9 @@ public class SyncHelper {
     ProgressDialog progressDialog1;
     LocalDBHelper localDBHelper;
     //TODO TO BE CHANGE FOR RELEASE
-    String get_keys_url = "http://www.careagriculture.com/uat/get_keys.php";
-    String read_animal_url = "http://www.careagriculture.com/uat/get_all_animals7.php";
-    String insert_animals_url = "http://www.careagriculture.com/uat/insert_animals29.php";
+    String get_keys_url = "http://www.careagriculture.com/get_keys.php";
+    String read_animal_url = "http://www.careagriculture.com/get_all_animals8.php";
+    String insert_animals_url = "http://www.careagriculture.com/insert_animals29.php";
 
     Context context;
 
@@ -66,8 +65,16 @@ public class SyncHelper {
     public static final String TAG_COUNTRY = "country";
     public static final String TAG_DATE_PURCHASED = "date_purchased";
     public static final String TAG_PURCHASE_PRICE = "purchase_price";
+    public static final String TAG_PURCHASE_WEIGHT = "purchase_weight";
+    public static final String TAG_PURCHASE_WEIGHT_UNIT = "purchase_weight_unit";
+    public static final String TAG_PURCHASE_HEIGHT = "purchase_height";
+    public static final String TAG_PURCHASE_HEIGHT_UNIT = "purchase_height_unit";
     public static final String TAG_DATE_DISTRIBUTED = "date_distributed";
     public static final String TAG_DATE_SOLD = "date_sold";
+    public static final String TAG_SALE_WEIGHT = "sale_weight";
+    public static final String TAG_SALE_WEIGHT_UNIT = "sale_weight_unit";
+    public static final String TAG_SALE_HEIGHT = "sale_height";
+    public static final String TAG_SALE_HEIGHT_UNIT = "sale_height_unit";
     public static final String TAG_SALE_PRICE = "sale_price";
     public static final String TAG_CREATE_USER = "create_user";
     public static final String TAG_CREATE_TIMESTAMP = "create_timestamp";
@@ -245,12 +252,29 @@ public class SyncHelper {
                                     map.put("DATE_PURCHASED", c.getString(TAG_DATE_PURCHASED));
                                 if (!c.isNull(TAG_PURCHASE_PRICE))
                                     map.put("PURCHASE_PRICE", c.getString(TAG_PURCHASE_PRICE));
+
+                                if (!c.isNull(TAG_PURCHASE_WEIGHT))
+                                    map.put("PURCHASE_WEIGHT", c.getString(TAG_PURCHASE_WEIGHT));
+                                if (!c.isNull(TAG_PURCHASE_WEIGHT_UNIT))
+                                    map.put("PURCHASE_WEIGHT_UNIT", c.getString(TAG_PURCHASE_WEIGHT_UNIT));
+                                if (!c.isNull(TAG_PURCHASE_HEIGHT))
+                                    map.put("PURCHASE_HEIGHT", c.getString(TAG_PURCHASE_HEIGHT));
+                                if (!c.isNull(TAG_PURCHASE_HEIGHT_UNIT))
+                                    map.put("PURCHASE_HEIGHT_UNIT", c.getString(TAG_PURCHASE_HEIGHT_UNIT));
                                 if (!c.isNull(TAG_DATE_DISTRIBUTED))
                                     map.put("DATE_DISTRIBUTED", c.getString(TAG_DATE_DISTRIBUTED));
                                 if (!c.isNull(TAG_DATE_SOLD))
                                     map.put("DATE_SOLD", c.getString(TAG_DATE_SOLD));
                                 if (!c.isNull(TAG_SALE_PRICE))
                                     map.put("SALE_PRICE", c.getString(TAG_SALE_PRICE));
+                                if (!c.isNull(TAG_SALE_WEIGHT))
+                                    map.put("SALE_WEIGHT", c.getString(TAG_SALE_WEIGHT));
+                                if (!c.isNull(TAG_SALE_WEIGHT_UNIT))
+                                    map.put("SALE_WEIGHT_UNIT", c.getString(TAG_SALE_WEIGHT_UNIT));
+                                if (!c.isNull(TAG_SALE_HEIGHT))
+                                    map.put("SALE_HEIGHT", c.getString(TAG_SALE_HEIGHT));
+                                if (!c.isNull(TAG_SALE_HEIGHT_UNIT))
+                                    map.put("SALE_HEIGHT_UNIT", c.getString(TAG_SALE_HEIGHT_UNIT));
                                 if (!c.isNull(TAG_CREATE_USER))
                                     map.put("CREATE_USER", c.getString(TAG_CREATE_USER));
                                 if (!c.isNull(TAG_CREATE_TIMESTAMP))
@@ -390,7 +414,12 @@ public class SyncHelper {
                 localDBHelper.updateSystemSyncTimestamp(Calendar.getInstance());
 
                 TextView countRecordsToSync = (TextView) ((Activity)context).findViewById(R.id.syncRecordCount);
-                countRecordsToSync.setText(String.valueOf(localDBHelper.getCountUnsyncRecords())+" record(s) have not been synced");
+                //countRecordsToSync.setText(String.valueOf(localDBHelper.getCountUnsyncRecords())+" record(s) have not been synced");
+
+                int count = localDBHelper.getCountUnsyncRecords();
+                if (count > 0)
+                    countRecordsToSync.setText(((Activity)context).getString(R.string.num_records_not_synced, count));
+                else countRecordsToSync.setText(((Activity)context).getString(R.string.all_records_synced));
             }
 
             @Override
@@ -463,7 +492,8 @@ public class SyncHelper {
 
                         } // for loop ends
                     } else if (key_success == 0 ){
-                        Toast.makeText(context, "Error downloading keys.", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, R.string.error_key_download, Toast.LENGTH_LONG).show();
+                        toast(context.getString(R.string.error_key_download));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
